@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SmartPark Riverton</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link rel="stylesheet" href="smartpark.css">
+
+</head>
+<body>
+<div class="app">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#07101f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M9 7h4a3 3 0 0 1 0 6H9V7z"/>
+          <path d="M9 13v4"/>
+        </svg>
+      </div>
+      <div><div class="logo-text">SmartPark</div><div class="logo-sub">RIVERTON</div></div>
+    </div>
+    <div class="tb-divider"></div>
+    <div class="role-switcher" id="role-switcher">
+      <button class="role-btn active" data-role="admin" onclick="switchRole('admin')">
+        <span class="rbdot" style="background:#3b82f6"></span>City Admin
+      </button>
+      <button class="role-btn" data-role="finance" onclick="switchRole('finance')">
+        <span class="rbdot" style="background:#10b981"></span>Finance
+      </button>
+      <button class="role-btn" data-role="ops" onclick="switchRole('ops')">
+        <span class="rbdot" style="background:#f59e0b"></span>Operations
+      </button>
+      <button class="role-btn" data-role="citizen" onclick="switchRole('citizen')">
+        <span class="rbdot" style="background:#8b5cf6"></span>Citizen
+      </button>
+    </div>
+    <div class="tb-right">
+      <div class="live-pill"><span class="live-dot"></span>8 zones live</div>
+      <span class="tb-chip" id="tb-chip1" style="background:rgba(239,68,68,0.12);color:#ef4444">2.2% collection</span>
+      <span class="tb-chip" id="tb-chip2" style="background:rgba(239,68,68,0.12);color:#ef4444">Z4 FULL</span>
+      <span style="font-size:11px;color:var(--txt3);font-family:var(--mono)" id="tb-clock"></span>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="body">
+    <!-- SIDEBAR -->
+    <nav class="sidebar" id="sidebar">
+      <div class="sb-user" id="sb-user"></div>
+      <div id="sb-nav"></div>
+      <div class="sb-footer"><div class="sb-footer-txt" id="sb-foot"></div></div>
+    </nav>
+
+    <!-- PAGES -->
+    <div class="main" id="pages"></div>
+  </div>
+</div>
+
+<!-- RECEIPT MODAL -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-title">Send Receipt</div>
+    <div class="modal-sub">Choose delivery for <strong id="modal-ref"></strong></div>
+    <div id="modal-opts"></div>
+    <div id="modal-email-row" style="margin-bottom:10px">
+      <div class="flbl" style="margin-bottom:4px">Email address</div>
+      <input class="finput" type="email" value="jane.doe@email.com" id="modal-email">
+    </div>
+    <div id="modal-phone-row" style="display:none;margin-bottom:10px">
+      <div class="flbl" style="margin-bottom:4px">Phone number</div>
+      <input class="finput" type="tel" value="+1 (618) 555-0291" id="modal-phone">
+    </div>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn btn-primary" onclick="doSend()" style="flex:1" id="modal-send-btn">Send Receipt</button>
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ADD CARD MODAL -->
+<div class="overlay" id="add-card-overlay">
+  <div class="modal">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+      <div style="width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--gold2),var(--gold));display:flex;align-items:center;justify-content:center;font-size:16px">💳</div>
+      <div class="modal-title" style="margin:0">Add New Card</div>
+    </div>
+    <div class="modal-sub">Your card details are encrypted and stored securely</div>
+
+    <!-- Card preview -->
+    <div id="ac-preview" style="background:linear-gradient(135deg,#1c3860,#0c2a50);border-radius:12px;padding:18px 20px;margin-bottom:18px;position:relative;overflow:hidden;min-height:120px">
+      <div style="position:absolute;top:0;left:0;right:0;bottom:0;opacity:.06;background:repeating-linear-gradient(45deg,rgba(255,255,255,.1) 0,rgba(255,255,255,.1) 1px,transparent 1px,transparent 12px)"></div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px">
+        <div style="font-size:13px;font-weight:700;color:var(--gold3);letter-spacing:.1em">SMARTPARK PAY</div>
+        <div id="ac-network-logo" style="font-size:11px;font-weight:800;color:#fff;opacity:.8">——</div>
+      </div>
+      <div id="ac-card-number-display" style="font-size:17px;font-weight:700;color:#fff;letter-spacing:.18em;font-family:var(--mono);margin-bottom:14px">•••• •••• •••• ••••</div>
+      <div style="display:flex;gap:24px">
+        <div><div style="font-size:9px;color:rgba(255,255,255,.5);letter-spacing:.1em;margin-bottom:2px">CARDHOLDER</div><div id="ac-name-display" style="font-size:12px;font-weight:600;color:#fff">FULL NAME</div></div>
+        <div><div style="font-size:9px;color:rgba(255,255,255,.5);letter-spacing:.1em;margin-bottom:2px">EXPIRES</div><div id="ac-exp-display" style="font-size:12px;font-weight:600;color:#fff">MM/YY</div></div>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <div class="fgrp">
+      <div class="flbl">Cardholder Name</div>
+      <input class="finput" type="text" id="ac-name" placeholder="As it appears on card" oninput="updateCardPreview()">
+    </div>
+    <div class="fgrp">
+      <div class="flbl">Card Number</div>
+      <input class="finput" type="text" id="ac-number" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCardNumber(this)">
+    </div>
+    <div class="frow2">
+      <div class="fgrp">
+        <div class="flbl">Expiry Date</div>
+        <input class="finput" type="text" id="ac-expiry" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)">
+      </div>
+      <div class="fgrp">
+        <div class="flbl">CVV</div>
+        <input class="finput" type="text" id="ac-cvv" placeholder="123" maxlength="4" oninput="this.value=this.value.replace(/\D/g,'')">
+      </div>
+    </div>
+    <div class="fgrp">
+      <div class="flbl">Billing Zip Code</div>
+      <input class="finput" type="text" id="ac-zip" placeholder="62701" maxlength="5" oninput="this.value=this.value.replace(/\D/g,'')">
+    </div>
+    <label style="display:flex;align-items:center;gap:9px;cursor:pointer;margin-bottom:16px;font-size:12px;color:var(--txt2)">
+      <input type="checkbox" id="ac-default" style="accent-color:var(--gold);width:14px;height:14px">
+      Set as default payment method
+    </label>
+
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-primary" onclick="saveNewCard()" style="flex:1">Save Card</button>
+      <button class="btn btn-ghost" onclick="closeAddCard()">Cancel</button>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:6px;justify-content:center;margin-top:12px">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--txt3)"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <span style="font-size:11px;color:var(--txt3)">256-bit SSL encryption · PCI DSS compliant</span>
+    </div>
+  </div>
+</div>
+
+<script src="smartpark.js"></script>
+
+</body>
+</html>
