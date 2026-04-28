@@ -1,0 +1,2626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SmartPark Riverton</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+/* SmartPark Riverton — Navy × Gold Civic Theme */
+:root {
+  --bg:      #07101f;
+  --bg2:     #0c1a32;
+  --bg3:     #11243f;
+  --bg4:     #162e4e;
+  --surface: #1c3860;
+  --bdr:     rgba(255,255,255,0.07);
+  --bdr2:    rgba(255,255,255,0.13);
+  --bdr-g:   rgba(212,175,55,0.22);
+  --txt:     #eef3ff;
+  --txt2:    #8fa3c8;
+  --txt3:    #3a5278;
+  --gold:    #d4af37;
+  --gold2:   #b8940f;
+  --gold3:   #f0d060;
+  --gold-lt: rgba(212,175,55,0.1);
+  --blue:    #3b82f6;
+  --blue-lt: rgba(59,130,246,0.12);
+  --green:   #10b981;
+  --green-lt:rgba(16,185,129,0.12);
+  --amber:   #f59e0b;
+  --amber-lt:rgba(245,158,11,0.12);
+  --red:     #ef4444;
+  --red-lt:  rgba(239,68,68,0.12);
+  --purple:  #8b5cf6;
+  --purple-lt:rgba(139,92,246,0.12);
+  --teal:    #06b6d4;
+  --font:    'Plus Jakarta Sans',sans-serif;
+  --mono:    'JetBrains Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--txt);font-size:14px;overflow:hidden;}
+body{background-image:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(212,175,55,0.05) 0%,transparent 60%);}
+
+/* LAYOUT */
+.app{display:grid;grid-template-rows:56px 1fr;height:100vh;}
+.body{display:grid;grid-template-columns:228px 1fr;overflow:hidden;}
+
+/* TOPBAR */
+.topbar{background:var(--bg2);border-bottom:1px solid var(--bdr-g);display:flex;align-items:center;padding:0 18px;gap:14px;position:relative;z-index:100;}
+.topbar::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold) 30%,var(--gold3) 50%,var(--gold) 70%,transparent);opacity:.65;}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo-mark{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,var(--gold2),var(--gold),var(--gold3));display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 12px rgba(212,175,55,.35);}
+.logo-text{font-size:16px;font-weight:800;color:var(--txt);letter-spacing:-.03em;line-height:1;}
+.logo-sub{font-size:9px;color:var(--gold);font-family:var(--mono);letter-spacing:.14em;margin-top:3px;opacity:.8;}
+.tb-divider{width:1px;height:22px;background:var(--bdr2);}
+.role-switcher{display:flex;align-items:center;gap:3px;background:rgba(255,255,255,.04);border:1px solid var(--bdr);border-radius:10px;padding:3px;}
+.role-btn{display:flex;align-items:center;gap:6px;padding:5px 13px;border-radius:7px;font-size:12px;font-weight:600;color:var(--txt2);cursor:pointer;border:none;background:none;font-family:var(--font);transition:all .15s;white-space:nowrap;}
+.role-btn:hover{background:rgba(255,255,255,.06);color:var(--txt);}
+.role-btn.active{background:linear-gradient(135deg,var(--bg3),var(--bg4));color:var(--gold3);border:1px solid var(--bdr-g);box-shadow:0 1px 6px rgba(0,0,0,.4);}
+.rbdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:9px;}
+.live-pill{display:flex;align-items:center;gap:5px;font-size:10px;font-family:var(--mono);color:var(--green);background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);padding:4px 10px;border-radius:20px;}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(16,185,129,.4);}50%{opacity:.6;box-shadow:0 0 0 3px rgba(16,185,129,0);}}
+.tb-chip{font-size:10px;font-family:var(--mono);padding:4px 10px;border-radius:6px;font-weight:500;border:1px solid transparent;}
+.tb-time{font-size:12px;font-family:var(--mono);color:var(--txt3);min-width:52px;text-align:right;}
+
+/* SIDEBAR */
+.sidebar{background:var(--bg2);border-right:1px solid var(--bdr-g);display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;position:relative;}
+.sidebar::before{content:'';position:absolute;top:0;left:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--gold) 0%,transparent 50%);opacity:.4;pointer-events:none;}
+.sb-user{padding:16px 14px 14px;border-bottom:1px solid var(--bdr);}
+.sb-avatar{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.3);}
+.sb-role-name{font-size:13px;font-weight:700;color:var(--txt);letter-spacing:-.01em;}
+.sb-role-sub{font-size:10px;color:var(--txt3);font-family:var(--mono);margin-top:2px;}
+.sb-section{padding:12px 10px 0;}
+.sb-lbl{font-size:9px;font-weight:700;color:var(--gold);letter-spacing:.14em;text-transform:uppercase;padding:0 8px;margin-bottom:5px;font-family:var(--mono);opacity:.7;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:10px;font-size:13px;font-weight:500;color:var(--txt2);cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:var(--font);transition:all .12s;margin-bottom:1px;white-space:nowrap;}
+.nav-item svg{width:14px;height:14px;flex-shrink:0;opacity:.55;}
+.nav-item:hover{background:rgba(255,255,255,.05);color:var(--txt);}
+.nav-item:hover svg{opacity:1;}
+.nav-item.active{background:rgba(212,175,55,.1);color:var(--gold3);border:1px solid rgba(212,175,55,.2);}
+.nav-item.active svg{opacity:1;}
+.nav-bdg{margin-left:auto;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;font-family:var(--mono);}
+.sb-footer{margin-top:auto;padding:12px 14px;border-top:1px solid var(--bdr);font-size:10px;font-family:var(--mono);color:var(--txt3);}
+
+/* MAIN */
+.main{overflow-y:auto;background:var(--bg);}
+.page{display:none;padding:24px;animation:fadeUp .22s ease;}
+.page.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+
+/* PAGE HEADER */
+.ph{margin-bottom:20px;}
+.ph h1{font-size:23px;font-weight:800;color:var(--txt);letter-spacing:-.03em;line-height:1;}
+.ph p{font-size:13px;color:var(--txt2);margin-top:5px;}
+
+/* KPI STRIP */
+.kstrip{display:grid;gap:1px;background:var(--bdr-g);border:1px solid var(--bdr-g);border-radius:13px;overflow:hidden;margin-bottom:18px;}
+.kcard{background:var(--bg2);padding:16px 18px;position:relative;overflow:hidden;transition:background .15s;}
+.kcard:hover{background:var(--bg3);}
+.kcard::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--kcolor,var(--gold));opacity:.7;}
+.klbl{font-size:10px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px;font-family:var(--mono);}
+.kval{font-size:22px;font-weight:800;letter-spacing:-.03em;line-height:1;}
+.kdelta{font-size:11px;color:var(--txt3);margin-top:3px;font-family:var(--mono);}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:14px;}
+.g13{display:grid;grid-template-columns:1fr 2fr;gap:14px;margin-bottom:14px;}
+.g21{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px;}
+
+/* CARDS */
+.card{background:var(--bg2);border:1px solid var(--bdr);border-radius:13px;padding:18px;margin-bottom:14px;position:relative;overflow:hidden;transition:border-color .15s;}
+.card:hover{border-color:rgba(212,175,55,.15);}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.12),transparent);}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.card-title{font-size:11px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.08em;font-family:var(--mono);}
+.cw{position:relative;}
+
+/* ALERT */
+.alert{display:flex;align-items:flex-start;gap:10px;border-radius:10px;padding:13px 15px;margin-bottom:16px;font-size:13px;}
+.alert-icon{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0;margin-top:1px;}
+
+/* ZONE MAP */
+.zone-map{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+.zone-tile{background:var(--bg3);border:1px solid var(--bdr);border-radius:13px;padding:14px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;}
+.zone-tile:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4);border-color:var(--bdr2);}
+.zone-tile::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.zone-tile.z-full::after{background:var(--red);}
+.zone-tile.z-busy::after{background:var(--amber);}
+.zone-tile.z-open::after{background:var(--green);}
+.zone-tile.z-sel{box-shadow:0 0 0 2px var(--gold),0 8px 24px rgba(212,175,55,.2)!important;border-color:var(--gold)!important;}
+.zt-id{font-size:19px;font-weight:800;color:var(--txt);letter-spacing:-.02em;margin-bottom:4px;}
+.zt-free{font-size:18px;font-weight:800;line-height:1;}
+.zt-lbl{font-size:10px;font-family:var(--mono);margin-top:1px;}
+.zt-rate{font-size:11px;color:var(--txt2);margin-top:6px;font-weight:500;}
+.zt-bar-wrap{background:rgba(255,255,255,.06);border-radius:2px;height:3px;margin-top:8px;overflow:hidden;}
+.zt-bar{height:100%;border-radius:2px;transition:width 1s ease;}
+.zt-badge{position:absolute;top:8px;right:8px;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;font-family:var(--mono);}
+
+/* MAP BACKGROUND */
+.map-bg{background:linear-gradient(145deg,var(--bg2),#0d1f40,var(--bg2));border-radius:13px;padding:18px;position:relative;overflow:hidden;border:1px solid var(--bdr-g);}
+.map-bg::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(212,175,55,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(212,175,55,.04) 1px,transparent 1px);background-size:32px 32px;}
+.map-label{font-size:10px;font-family:var(--mono);color:var(--gold);margin-bottom:14px;letter-spacing:.12em;text-transform:uppercase;position:relative;opacity:.8;}
+
+/* SPOT PANEL */
+.spot-panel{background:var(--bg2);border:1px solid var(--bdr-g);border-radius:13px;padding:18px;margin-bottom:14px;display:none;}
+.spot-panel.show{display:block;animation:fadeUp .2s ease;}
+.spot-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:5px;margin:12px 0;}
+.sp{height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;font-family:var(--mono);border:1px solid transparent;cursor:pointer;transition:all .12s;}
+.sp.free{background:rgba(16,185,129,.1);color:#10b981;border-color:rgba(16,185,129,.25);}
+.sp.free:hover{background:#10b981;color:#fff;transform:scale(1.08);}
+.sp.taken{background:rgba(239,68,68,.07);color:#ef4444;border-color:rgba(239,68,68,.15);cursor:default;}
+.sp.picked{background:var(--gold)!important;color:#07101f!important;border-color:var(--gold2)!important;transform:scale(1.08);font-weight:800;}
+.dir-card{background:linear-gradient(135deg,var(--bg3),var(--bg4));border:1px solid var(--bdr-g);border-radius:13px;padding:16px;color:var(--txt);margin-top:12px;}
+.dir-label{font-size:10px;font-weight:700;color:var(--gold);margin-bottom:4px;font-family:var(--mono);letter-spacing:.1em;}
+.dir-spot{font-size:20px;font-weight:800;margin-bottom:3px;letter-spacing:-.02em;}
+.dir-info{font-size:12px;color:var(--txt2);margin-bottom:10px;}
+.dir-step{display:flex;gap:8px;font-size:12px;color:var(--txt2);margin-bottom:5px;align-items:flex-start;}
+.dir-step-num{width:18px;height:18px;border-radius:50%;background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.25);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--gold3);flex-shrink:0;}
+
+/* PERMIT CARDS */
+.permit-card{background:var(--bg2);border:1px solid var(--bdr);border-radius:13px;overflow:hidden;margin-bottom:10px;transition:border-color .15s;}
+.permit-card:hover{border-color:var(--bdr-g);}
+.permit-head{padding:13px 15px;display:flex;align-items:center;gap:11px;}
+.permit-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.permit-name{font-size:13px;font-weight:700;color:var(--txt);}
+.permit-meta{font-size:10px;color:var(--txt3);font-family:var(--mono);margin-top:2px;}
+.permit-status{margin-left:auto;text-align:right;}
+.status-tag{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;font-family:var(--mono);}
+.permit-body{padding:11px 15px;background:var(--bg3);border-top:1px solid var(--bdr);display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.pd{background:var(--bg2);border-radius:6px;padding:8px 10px;border:1px solid var(--bdr);}
+.pd-l{font-size:9px;color:var(--txt3);font-family:var(--mono);margin-bottom:3px;text-transform:uppercase;}
+.pd-v{font-size:12px;font-weight:700;color:var(--txt);}
+
+/* WIZARD */
+.wizard{display:flex;align-items:center;margin-bottom:20px;}
+.wstep{display:flex;align-items:center;gap:7px;flex:1;}
+.wnum{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;transition:all .2s;flex-shrink:0;}
+.wlbl{font-size:11px;font-weight:600;color:var(--txt3);transition:color .2s;}
+.wline{flex:1;height:1px;background:var(--bdr2);margin:0 8px;}
+
+/* FORMS */
+.fgrp{display:flex;flex-direction:column;gap:4px;margin-bottom:12px;}
+.flbl{font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;font-family:var(--mono);}
+.finput{background:var(--bg3);border:1px solid var(--bdr2);border-radius:9px;padding:10px 13px;font-size:13px;color:var(--txt);font-family:var(--font);outline:none;transition:border-color .15s,box-shadow .15s;width:100%;}
+.finput:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,175,55,.1);}
+.frow2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:var(--font);transition:all .15s;letter-spacing:.01em;}
+.btn:hover{transform:translateY(-1px);}
+.btn:active{transform:translateY(0);}
+.btn-primary{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#07101f;box-shadow:0 2px 10px rgba(212,175,55,.3);}
+.btn-primary:hover{box-shadow:0 4px 18px rgba(212,175,55,.45);}
+.btn-success{background:linear-gradient(135deg,#059669,#10b981);color:#fff;box-shadow:0 2px 10px rgba(16,185,129,.25);}
+.btn-success:hover{box-shadow:0 4px 16px rgba(16,185,129,.35);}
+.btn-ghost{background:rgba(255,255,255,.05);color:var(--txt2);border:1px solid var(--bdr2);}
+.btn-ghost:hover{color:var(--txt);background:rgba(255,255,255,.09);border-color:var(--bdr-g);}
+.btn-sm{padding:6px 12px;font-size:11px;}
+.btn-block{width:100%;justify-content:center;}
+
+/* RECEIPTS */
+.receipt{background:var(--bg2);border:1px solid var(--bdr-g);border-radius:16px;overflow:hidden;margin-bottom:14px;transition:box-shadow .15s;}
+.receipt:hover{box-shadow:0 4px 20px rgba(212,175,55,.08);}
+.rhead{padding:18px 20px;color:#fff;}
+.rbody{padding:14px 20px;}
+.rrow{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--bdr);font-size:13px;}
+.rrow:last-child{border-bottom:none;}
+.rl{color:var(--txt2);}
+.rv{font-weight:600;color:var(--txt);}
+.rfoot{padding:12px 20px;background:var(--bg3);border-top:1px solid var(--bdr);display:flex;align-items:center;}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(4px);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
+.overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--bg2);border:1px solid var(--bdr-g);border-radius:16px;padding:26px;width:450px;max-width:90vw;transform:translateY(8px);transition:transform .2s;box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 0 1px rgba(212,175,55,.1);}
+.overlay.open .modal{transform:translateY(0);}
+.modal-title{font-size:17px;font-weight:800;color:var(--txt);margin-bottom:4px;letter-spacing:-.02em;}
+.modal-sub{font-size:13px;color:var(--txt2);margin-bottom:18px;}
+.send-opt{display:flex;align-items:center;gap:10px;padding:12px 13px;border-radius:10px;cursor:pointer;border:1px solid var(--bdr2);margin-bottom:7px;transition:all .12s;background:var(--bg3);}
+.send-opt:hover,.send-opt.sel{border-color:var(--gold);background:rgba(212,175,55,.08);}
+.send-opt-icon{width:32px;height:32px;border-radius:7px;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.send-opt-name{font-size:13px;font-weight:700;color:var(--txt);}
+.send-opt-sub{font-size:11px;color:var(--txt3);}
+.send-chk{margin-left:auto;width:20px;height:20px;border-radius:50%;border:2px solid var(--bdr2);display:flex;align-items:center;justify-content:center;transition:all .12s;}
+
+/* TABLE */
+.dtable{width:100%;border-collapse:collapse;}
+.dtable th{font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;padding:7px 10px;border-bottom:1px solid var(--bdr-g);text-align:left;font-family:var(--mono);opacity:.8;}
+.dtable td{padding:9px 10px;font-size:12px;color:var(--txt2);border-bottom:1px solid rgba(255,255,255,.03);}
+.dtable tr:hover td{background:var(--bg3);}
+
+/* PROGRESS */
+.prog-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.prog-lbl{font-size:12px;color:var(--txt2);flex-shrink:0;}
+.prog-track{flex:1;background:var(--bg4);border-radius:3px;height:5px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:3px;transition:width 1s ease;}
+.prog-val{font-size:11px;font-family:var(--mono);flex-shrink:0;color:var(--txt2);}
+
+/* ACTIVITY */
+.act-item{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.03);}
+.act-item:last-child{border-bottom:none;}
+.act-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.act-title{font-size:12px;font-weight:600;color:var(--txt);}
+.act-sub{font-size:10px;color:var(--txt3);font-family:var(--mono);margin-top:1px;}
+.act-amt{margin-left:auto;text-align:right;}
+.act-val{font-size:13px;font-weight:700;color:var(--txt);}
+.act-date{font-size:10px;color:var(--txt3);font-family:var(--mono);}
+
+/* SEARCH */
+.search-bar{display:flex;gap:8px;margin-bottom:14px;}
+.search-input{flex:1;background:var(--bg3);border:1px solid var(--bdr2);border-radius:9px;padding:10px 14px;font-size:13px;color:var(--txt);font-family:var(--font);outline:none;transition:border-color .15s,box-shadow .15s;}
+.search-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,175,55,.08);}
+.search-input::placeholder{color:var(--txt3);}
+
+/* TAGS */
+.tag{font-family:var(--mono);font-size:9px;padding:3px 8px;border-radius:4px;letter-spacing:.04em;font-weight:700;}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;right:22px;padding:12px 18px;border-radius:12px;font-size:13px;font-weight:600;z-index:9999;transform:translateY(70px);opacity:0;transition:all .28s cubic-bezier(.34,1.56,.64,1);box-shadow:0 8px 28px rgba(0,0,0,.5),0 0 0 1px rgba(212,175,55,.15);font-family:var(--font);max-width:320px;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px;}
+::-webkit-scrollbar-track{background:transparent;}
+
+/* UTILS */
+.livdot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;animation:pulse 2s infinite;}
+@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#07101f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M9 7h4a3 3 0 0 1 0 6H9V7z"/>
+          <path d="M9 13v4"/>
+        </svg>
+      </div>
+      <div><div class="logo-text">SmartPark</div><div class="logo-sub">RIVERTON</div></div>
+    </div>
+    <div class="tb-divider"></div>
+    <div class="role-switcher" id="role-switcher">
+      <button class="role-btn active" data-role="admin" onclick="switchRole('admin')">
+        <span class="rbdot" style="background:#3b82f6"></span>City Admin
+      </button>
+      <button class="role-btn" data-role="finance" onclick="switchRole('finance')">
+        <span class="rbdot" style="background:#10b981"></span>Finance
+      </button>
+      <button class="role-btn" data-role="ops" onclick="switchRole('ops')">
+        <span class="rbdot" style="background:#f59e0b"></span>Operations
+      </button>
+      <button class="role-btn" data-role="citizen" onclick="switchRole('citizen')">
+        <span class="rbdot" style="background:#8b5cf6"></span>Citizen
+      </button>
+    </div>
+    <div class="tb-right">
+      <div class="live-pill"><span class="live-dot"></span>8 zones live</div>
+      <span class="tb-chip" id="tb-chip1" style="background:rgba(239,68,68,0.12);color:#ef4444">2.2% collection</span>
+      <span class="tb-chip" id="tb-chip2" style="background:rgba(239,68,68,0.12);color:#ef4444">Z4 FULL</span>
+      <span style="font-size:11px;color:var(--txt3);font-family:var(--mono)" id="tb-clock"></span>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="body">
+    <!-- SIDEBAR -->
+    <nav class="sidebar" id="sidebar">
+      <div class="sb-user" id="sb-user"></div>
+      <div id="sb-nav"></div>
+      <div class="sb-footer"><div class="sb-footer-txt" id="sb-foot"></div></div>
+    </nav>
+
+    <!-- PAGES -->
+    <div class="main" id="pages"></div>
+  </div>
+</div>
+
+<!-- RECEIPT MODAL -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-title">Send Receipt</div>
+    <div class="modal-sub">Choose delivery for <strong id="modal-ref"></strong></div>
+    <div id="modal-opts"></div>
+    <div id="modal-email-row" style="margin-bottom:10px">
+      <div class="flbl" style="margin-bottom:4px">Email address</div>
+      <input class="finput" type="email" value="jane.doe@email.com" id="modal-email">
+    </div>
+    <div id="modal-phone-row" style="display:none;margin-bottom:10px">
+      <div class="flbl" style="margin-bottom:4px">Phone number</div>
+      <input class="finput" type="tel" value="+1 (618) 555-0291" id="modal-phone">
+    </div>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn btn-primary" onclick="doSend()" style="flex:1" id="modal-send-btn">Send Receipt</button>
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ADD CARD MODAL -->
+<div class="overlay" id="add-card-overlay">
+  <div class="modal">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+      <div style="width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--gold2),var(--gold));display:flex;align-items:center;justify-content:center;font-size:16px">💳</div>
+      <div class="modal-title" style="margin:0">Add New Card</div>
+    </div>
+    <div class="modal-sub">Your card details are encrypted and stored securely</div>
+
+    <!-- Card preview -->
+    <div id="ac-preview" style="background:linear-gradient(135deg,#1c3860,#0c2a50);border-radius:12px;padding:18px 20px;margin-bottom:18px;position:relative;overflow:hidden;min-height:120px">
+      <div style="position:absolute;top:0;left:0;right:0;bottom:0;opacity:.06;background:repeating-linear-gradient(45deg,rgba(255,255,255,.1) 0,rgba(255,255,255,.1) 1px,transparent 1px,transparent 12px)"></div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px">
+        <div style="font-size:13px;font-weight:700;color:var(--gold3);letter-spacing:.1em">SMARTPARK PAY</div>
+        <div id="ac-network-logo" style="font-size:11px;font-weight:800;color:#fff;opacity:.8">——</div>
+      </div>
+      <div id="ac-card-number-display" style="font-size:17px;font-weight:700;color:#fff;letter-spacing:.18em;font-family:var(--mono);margin-bottom:14px">•••• •••• •••• ••••</div>
+      <div style="display:flex;gap:24px">
+        <div><div style="font-size:9px;color:rgba(255,255,255,.5);letter-spacing:.1em;margin-bottom:2px">CARDHOLDER</div><div id="ac-name-display" style="font-size:12px;font-weight:600;color:#fff">FULL NAME</div></div>
+        <div><div style="font-size:9px;color:rgba(255,255,255,.5);letter-spacing:.1em;margin-bottom:2px">EXPIRES</div><div id="ac-exp-display" style="font-size:12px;font-weight:600;color:#fff">MM/YY</div></div>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <div class="fgrp">
+      <div class="flbl">Cardholder Name</div>
+      <input class="finput" type="text" id="ac-name" placeholder="As it appears on card" oninput="updateCardPreview()">
+    </div>
+    <div class="fgrp">
+      <div class="flbl">Card Number</div>
+      <input class="finput" type="text" id="ac-number" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCardNumber(this)">
+    </div>
+    <div class="frow2">
+      <div class="fgrp">
+        <div class="flbl">Expiry Date</div>
+        <input class="finput" type="text" id="ac-expiry" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)">
+      </div>
+      <div class="fgrp">
+        <div class="flbl">CVV</div>
+        <input class="finput" type="text" id="ac-cvv" placeholder="123" maxlength="4" oninput="this.value=this.value.replace(/\D/g,'')">
+      </div>
+    </div>
+    <div class="fgrp">
+      <div class="flbl">Billing Zip Code</div>
+      <input class="finput" type="text" id="ac-zip" placeholder="62701" maxlength="5" oninput="this.value=this.value.replace(/\D/g,'')">
+    </div>
+    <label style="display:flex;align-items:center;gap:9px;cursor:pointer;margin-bottom:16px;font-size:12px;color:var(--txt2)">
+      <input type="checkbox" id="ac-default" style="accent-color:var(--gold);width:14px;height:14px">
+      Set as default payment method
+    </label>
+
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-primary" onclick="saveNewCard()" style="flex:1">Save Card</button>
+      <button class="btn btn-ghost" onclick="closeAddCard()">Cancel</button>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:6px;justify-content:center;margin-top:12px">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--txt3)"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <span style="font-size:11px;color:var(--txt3)">256-bit SSL encryption · PCI DSS compliant</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+var ZONES = [
+  {id:'Z1',name:'Main Street',   spots:24,free:8,  st:'busy',rate:2.00,addr:'Main St & Oak Ave'},
+  {id:'Z2',name:'Elm Street',    spots:20,free:12, st:'open',rate:2.00,addr:'Elm St, City Hall'},
+  {id:'Z3',name:'University',    spots:32,free:6,  st:'busy',rate:1.50,addr:'University Blvd'},
+  {id:'Z4',name:'Downtown Core', spots:40,free:0,  st:'full',rate:2.50,addr:'Central Ave & 1st'},
+  {id:'Z5',name:'Riverside',     spots:28,free:14, st:'open',rate:1.50,addr:'Riverside Dr'},
+  {id:'Z6',name:'Medical Center',spots:36,free:3,  st:'busy',rate:2.00,addr:'Hospital Rd'},
+  {id:'Z7',name:'Historic Dist.',spots:18,free:10, st:'open',rate:1.50,addr:'Heritage Blvd'},
+  {id:'Z8',name:'Commerce Park', spots:30,free:2,  st:'busy',rate:2.00,addr:'Business Loop'}
+];
+var MO = ['Aug','Sep','Oct','Nov','Dec','Jan'];
+var FINES = [7772,7624,7921,7683,8032,8031];
+var COLL  = [177,170,171,175,180,177];
+var currentRole = 'admin';
+var selZone = ZONES[1];
+var selSpot = null;
+var sendSel = {email:true,phone:false,account:false};
+var charts = {};
+
+// ─── COLORS ──────────────────────────────────────────────────────────────────
+var ACC = {admin:'#3b82f6',finance:'#10b981',ops:'#f59e0b',citizen:'#8b5cf6'};
+var TC = 'rgba(120,140,180,0.7)';
+var GC = 'rgba(255,255,255,0.04)';
+
+// ─── UTILS ───────────────────────────────────────────────────────────────────
+function qs(id){ return document.getElementById(id); }
+function acc(){ return ACC[currentRole] || '#3b82f6'; }
+
+var toastTimer;
+function toast(msg,good){
+  var el=qs('toast');
+  el.textContent=msg;
+  el.style.background=good===false?'#ef4444':'linear-gradient(135deg,#b8940f,#d4af37)';
+  el.style.color=good===false?'#fff':'#07101f';
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){el.classList.remove('show');},3000);
+}
+
+function tick(){
+  var d=new Date();
+  var el=qs('tb-clock');
+  if(el) el.textContent=d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+}
+tick(); setInterval(tick,1000);
+
+// ─── PAGE NAVIGATION ─────────────────────────────────────────────────────────
+function nav(pid){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.nav-item').forEach(function(b){b.classList.remove('active');});
+  var p=qs('p-'+pid);
+  if(p) p.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(function(b){
+    if(b.dataset.page===pid) b.classList.add('active');
+  });
+  // Live refresh when navigating to these pages
+  if(pid==='a-permits') refreshAdminPermitQueue();
+  if(pid==='c-permits') refreshCitizenPermits();
+  if(pid==='c-citations') refreshCitizenCitationStatus();
+  if(pid==='o-issue') setTimeout(initCitForm, 50);
+}
+
+// ─── ROLE SWITCHING ──────────────────────────────────────────────────────────
+function switchRole(role){
+  currentRole=role;
+  document.querySelectorAll('.role-btn').forEach(function(b){
+    b.classList.toggle('active', b.dataset.role===role);
+  });
+  // Update accent color everywhere
+  var a=acc();
+  document.querySelectorAll('.nav-item.active').forEach(function(n){
+    n.style.background=a+'22'; n.style.color=a;
+  });
+  buildSidebar();
+  buildPages();
+}
+
+// ─── SIDEBAR ─────────────────────────────────────────────────────────────────
+var ICONS = {
+  grid:'<rect x="3" y="3" w="7" h="7"/><rect x="14" y="3" w="7" h="7"/><rect x="14" y="14" w="7" h="7"/><rect x="3" y="14" w="7" h="7"/>',
+  chart:'<polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/>',
+  park:'<circle cx="12" cy="12" r="10"/><path d="M9 7h4a3 3 0 0 1 0 6H9V7z"/><path d="M9 13v4"/>',
+  doc:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/>',
+  dollar:'<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
+  trend:'<polyline points="23,6 13.5,15.5 8.5,10.5 1,18"/><polyline points="17,6 23,6 23,12"/>',
+  users:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>',
+  search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>',
+  cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+  plus:'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+  card:'<rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>',
+  msg:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  user:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  table:'<path d="M3 3h18v18H3z"/><path d="M21 9H3M9 21V9"/>',
+  shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  pipe:'<polyline points="16,3 21,3 21,8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21,16 21,21 16,21"/><line x1="15" y1="15" x2="21" y2="21"/>'
+};
+
+function mkIcon(key){
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+ICONS[key]+'</svg>';
+}
+function mkNavItem(icon,label,pid,badge){
+  return '<button class="nav-item" data-page="'+pid+'" onclick="nav(\''+pid+'\')">'+mkIcon(icon)+' '+label+(badge?'<span class="nav-bdg" style="background:rgba(239,68,68,0.15);color:#ef4444">'+badge+'</span>':'')+'</button>';
+}
+
+var ROLE_CONFIG = {
+  admin:{
+    avatar:'CA',avatarBg:'#1d4ed8',name:'City Administrator',sub:'Riverton City Hall',
+    foot:'Admin Portal · v2.4',
+    chipTxt:['751K Citations','Z4 FULL'],
+    sections:[
+      {lbl:'Overview', items:[['grid','City Overview','a-overview'],['park','Parking Zones','a-zones']]},
+      {lbl:'Management', items:[['doc','Permit Oversight','a-permits'],['shield','Compliance','a-compliance'],['users','Stakeholders','a-stake']]}
+    ]
+  },
+  finance:{
+    avatar:'FD',avatarBg:'#065f46',name:'Finance Department',sub:'Revenue & Collections',
+    foot:'Finance Portal · v2.4',
+    chipTxt:['$47M Issued','2.2% Collected'],
+    sections:[
+      {lbl:'Revenue', items:[['dollar','Revenue Overview','f-overview'],['msg','Fine Management','f-fines']]},
+      {lbl:'Recovery', items:[['trend','Recovery Pipeline','f-recovery'],['card','Payment Reports','f-reports']]}
+    ]
+  },
+  ops:{
+    avatar:'OM',avatarBg:'#92400e',name:'Operations Manager',sub:'Enforcement Division',
+    foot:'Ops Portal · v2.4',
+    chipTxt:['500 Officers','10% Invalid'],
+    sections:[
+      {lbl:'Enforcement', items:[['grid','Operations HQ','o-overview'],['users','Workforce','o-workforce'],['plus','Issue Citation','o-issue'],['table','Citation Records','o-citations']]},
+      {lbl:'Analytics', items:[['chart','Citation Quality','o-quality','!'],['park','Zone Performance','o-zones'],['table','Full Data','o-data']]}
+    ]
+  },
+  citizen:{
+    avatar:'JD',avatarBg:'#4c1d95',name:'Jane Doe',sub:'Plate: RVT-4829',
+    foot:'Citizen Portal · v2.4',
+    chipTxt:['342 spots open','Z4 Full'],
+    sections:[
+      {lbl:'Parking', items:[['search','Find My Parking','c-find'],['cal','Reserve a Spot','c-reserve']]},
+      {lbl:'Permits', items:[['doc','My Permits','c-permits'],['plus','Apply for Permit','c-apply']]},
+      {lbl:'Payments', items:[['card','Pay Fine / Citations','c-pay'],['shield','My Citations','c-citations'],['msg','My Receipts','c-receipts']]},
+      {lbl:'Account', items:[['user','My Account','c-account']]}
+    ]
+  }
+};
+
+function buildSidebar(){
+  var cfg=ROLE_CONFIG[currentRole];
+  var a=acc();
+  // User block
+  qs('sb-user').innerHTML='<div style="display:flex;align-items:center;gap:10px"><div class="sb-avatar" style="background:'+cfg.avatarBg+'">'+cfg.avatar+'</div><div><div class="sb-role-name">'+cfg.name+'</div><div class="sb-role-sub">'+cfg.sub+'</div></div></div>';
+  // Nav
+  var html='';
+  cfg.sections.forEach(function(s){
+    html+='<div class="sb-section"><div class="sb-lbl">'+s.lbl+'</div>';
+    s.items.forEach(function(it){
+      html+=mkNavItem(it[0],it[1],it[2],it[3]||'');
+    });
+    html+='</div>';
+  });
+  qs('sb-nav').innerHTML=html;
+  qs('sb-foot').innerHTML='<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:'+a+';margin-right:5px;animation:pulse 2s infinite"></span>'+cfg.foot;
+  // Chips
+  qs('tb-chip1').textContent=cfg.chipTxt[0];
+  qs('tb-chip2').textContent=cfg.chipTxt[1];
+  // Nav active style
+  document.querySelectorAll('.nav-item').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.nav-item').forEach(function(x){x.classList.remove('active');x.style.background='';x.style.color='';});
+      b.classList.add('active');
+      b.style.background=a+'22';
+      b.style.color=a;
+    },{once:true});
+  });
+}
+
+// ─── CHART HELPERS ────────────────────────────────────────────────────────────
+function bOpts(){
+  return {responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(15,20,35,0.95)',titleColor:'#e8edf5',bodyColor:'#7b8ab0',borderColor:'rgba(255,255,255,0.1)',borderWidth:1}},scales:{x:{ticks:{color:TC,font:{size:10}},grid:{display:false}},y:{ticks:{color:TC,font:{size:10}},grid:{color:GC}}}};
+}
+function dOpts(){
+  return {responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:true,position:'bottom',labels:{color:TC,font:{size:10},boxWidth:10,padding:12}}}};
+}
+function mkChart(id,type,data,opts){
+  var el=qs(id); if(!el) return;
+  if(charts[id]){charts[id].destroy();}
+  charts[id]=new Chart(el,{type:type,data:data,options:opts||bOpts()});
+}
+function stackedBar(id,labels,ds){
+  var el=qs(id); if(!el) return;
+  if(charts[id]) charts[id].destroy();
+  var o=bOpts(); o.scales.y.stacked=true;
+  charts[id]=new Chart(el,{type:'bar',data:{labels:labels,datasets:ds},options:o});
+}
+
+// ─── ZONE TILES ───────────────────────────────────────────────────────────────
+var STATUS_COLOR = {open:'#10b981',busy:'#f59e0b',full:'#ef4444'};
+var STATUS_CLASS = {open:'z-open',busy:'z-busy',full:'z-full'};
+var STATUS_LABEL = {open:'OPEN',busy:'BUSY',full:'FULL'};
+
+function buildZoneTiles(containerId,clickable){
+  var el=qs(containerId); if(!el) return;
+  el.innerHTML='';
+  ZONES.forEach(function(z){
+    var col=STATUS_COLOR[z.st];
+    var pct=Math.round((z.spots-z.free)/z.spots*100);
+    var d=document.createElement('div');
+    d.className='zone-tile '+STATUS_CLASS[z.st];
+    d.id='zt-'+z.id;
+    d.innerHTML='<div class="zt-badge" style="background:'+col+'22;color:'+col+'">'+STATUS_LABEL[z.st]+'</div>'
+      +'<div class="zt-id">'+z.id+'</div>'
+      +'<div class="zt-free" style="color:'+col+'">'+z.free+'</div>'
+      +'<div class="zt-lbl" style="color:'+col+'">'+(z.st==='full'?'no spots':'spots free')+'</div>'
+      +'<div class="zt-rate">$'+z.rate.toFixed(2)+'/hr · '+z.spots+' total</div>'
+      +'<div class="zt-bar-wrap"><div class="zt-bar" style="width:'+pct+'%;background:'+col+'"></div></div>';
+    if(clickable){(function(zone){d.onclick=function(){selectZone(zone);};})(z);}
+    el.appendChild(d);
+  });
+}
+
+// ─── SPOT PANEL ───────────────────────────────────────────────────────────────
+function selectZone(z){
+  selZone=z; selSpot=null;
+  document.querySelectorAll('.zone-tile').forEach(function(t){t.classList.remove('z-sel');});
+  var tile=qs('zt-'+z.id); if(tile) tile.classList.add('z-sel');
+  var panel=qs('spot-panel');
+  if(!panel) return;
+  panel.classList.add('show');
+  qs('sp-title').textContent='Zone '+z.id+' — '+z.name;
+  qs('sp-sub').textContent=z.addr+' · $'+z.rate.toFixed(2)+'/hr · '+z.free+' of '+z.spots+' spots free';
+  var btn=qs('sp-res-btn'); if(btn) btn.style.display=z.st==='full'?'none':'';
+  buildSpots('sp-grid',z,true);
+  var dir=qs('sp-dir'); if(dir) dir.style.display='none';
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function buildSpots(gid,z,forFind){
+  var g=qs(gid); if(!g) return; g.innerHTML='';
+  ['A','B','C','D'].forEach(function(row){
+    for(var i=1;i<=8;i++){
+      var sid=row+'-'+('0'+i).slice(-2);
+      var rnd=(row.charCodeAt(0)+i*7)%10;
+      var taken=z.st==='full'||(z.st==='busy'&&rnd<6)||(z.st==='open'&&rnd<2);
+      var d=document.createElement('div');
+      d.className='sp '+(taken?'taken':'free'); d.textContent=sid; d.dataset.sid=sid;
+      if(!taken){
+        (function(sid2,zone){
+          d.onclick=function(){
+            if(forFind) pickSpot(sid2,zone,gid);
+            else resPickSpot(sid2,zone);
+          };
+        })(sid,z);
+      }
+      g.appendChild(d);
+    }
+  });
+}
+
+function pickSpot(sid,z,gid){
+  selSpot=sid;
+  document.querySelectorAll('#'+gid+' .sp.free').forEach(function(s){s.classList.remove('picked');});
+  document.querySelectorAll('#'+gid+' .sp').forEach(function(s){if(s.dataset.sid===sid) s.classList.add('picked');});
+  var dir=qs('sp-dir'); if(!dir) return; dir.style.display='block';
+  qs('dir-spot').textContent='Zone '+z.id+' — Spot '+sid;
+  qs('dir-info').textContent=z.name+' · '+z.addr+' · $'+z.rate.toFixed(2)+'/hr';
+  var steps=['Enter from '+z.addr+' main entrance','Take ramp to Level '+(['A','B'].indexOf(sid[0])>=0?'1':'2'),'Spot '+sid+' on the '+(['A','B'].indexOf(sid[0])>=0?'left':'right')+' side','Display digital permit QR code on dashboard'];
+  qs('dir-steps').innerHTML=steps.map(function(s,i){return '<div class="dir-step"><div class="dir-step-num">'+(i+1)+'</div><span>'+s+'</span></div>';}).join('');
+}
+
+// ─── RESERVE WIZARD ──────────────────────────────────────────────────────────
+var resStep=1;
+function goWS(step){
+  resStep=step;
+  for(var i=1;i<=4;i++){
+    var ws=qs('ws-'+i); if(ws) ws.style.display=i===step?'':  'none';
+    var wn=qs('wn-'+i),wl=qs('wl-'+i);
+    if(wn&&wl){
+      if(i<step){wn.style.cssText='width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:#10b981;color:#fff;flex-shrink:0;';wl.style.color='#10b981';}
+      else if(i===step){wn.style.cssText='width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:'+acc()+';color:#fff;flex-shrink:0;';wl.style.color=acc();}
+      else{wn.style.cssText='width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:2px solid var(--bdr2);color:var(--txt3);flex-shrink:0;';wl.style.color='var(--txt3)';}
+    }
+  }
+  if(step===2){buildSpots('res-spot-grid',selZone,false); qs('ws2-zone').textContent='Zone '+selZone.id;}
+  if(step===3) updateResSummary();
+}
+function resPickSpot(sid,z){
+  selSpot=sid; selZone=z;
+  document.querySelectorAll('#res-spot-grid .sp.free').forEach(function(s){s.classList.remove('picked');});
+  document.querySelectorAll('#res-spot-grid .sp').forEach(function(s){if(s.dataset.sid===sid)s.classList.add('picked');});
+  var rc=qs('res-chosen'); if(rc){rc.style.display='flex';}
+  var rl=qs('res-chosen-lbl'); if(rl) rl.textContent='Spot '+sid+' — Zone '+z.id;
+  updateResSummary();
+}
+function updateResSummary(){
+  var from=(qs('r-from')||{}).value||'09:00', to=(qs('r-to')||{}).value||'11:00';
+  var fh=parseInt(from),fm=parseInt(from.split(':')[1]||0),th=parseInt(to),tm=parseInt(to.split(':')[1]||0);
+  var hrs=Math.max(0.5,((th*60+tm)-(fh*60+fm))/60);
+  var total=(hrs*selZone.rate).toFixed(2);
+  function ss(id,v){var e=qs(id);if(e)e.textContent=v;}
+  ss('sum-zone',selZone.id+' — '+selZone.name);
+  ss('sum-spot',selSpot||'Not selected');
+  ss('sum-date',(qs('r-date')||{}).value||'Today');
+  ss('sum-time',from+' – '+to);
+  ss('sum-rate','$'+selZone.rate.toFixed(2)+'/hr');
+  ss('sum-total','$'+total);
+  ss('pay-total','$'+total);
+}
+function confirmResPay(){
+  var code='SP-'+new Date().getFullYear()+'-'+Math.floor(8000+Math.random()*999);
+  qs('conf-code').textContent=code;
+  qs('conf-detail').textContent='Spot '+(selSpot||'A-01')+', Zone '+selZone.id;
+  goWS(4); toast('Booking confirmed! Receipt saved to account.');
+}
+
+// ─── RECEIPT MODAL ────────────────────────────────────────────────────────────
+function openModal(ref){
+  qs('modal-ref').textContent='#'+ref;
+  sendSel={email:true,phone:false,account:false};
+  renderModalOpts();
+  qs('overlay').classList.add('open');
+}
+function closeModal(){ qs('overlay').classList.remove('open'); }
+function renderModalOpts(){
+  var a=acc();
+  var opts=[
+    {k:'email',icon:'📧',name:'Email',sub:'jane.doe@email.com'},
+    {k:'phone',icon:'📱',name:'SMS / Text',sub:'+1 (618) 555-0291'},
+    {k:'account',icon:'🗂',name:'Save to Account',sub:'Stored permanently for future reference'}
+  ];
+  var html='';
+  opts.forEach(function(o){
+    var sel=sendSel[o.k];
+    html+='<div class="send-opt'+(sel?' sel':'')+'" onclick="toggleSend(\''+o.k+'\')">'
+      +'<div class="send-opt-icon">'+o.icon+'</div>'
+      +'<div><div class="send-opt-name">'+o.name+'</div><div class="send-opt-sub">'+o.sub+'</div></div>'
+      +'<div class="send-chk" style="'+(sel?'background:'+a+';border-color:'+a:'')+'">'+(sel?'<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>':'')+'</div>'
+      +'</div>';
+  });
+  qs('modal-opts').innerHTML=html;
+  qs('modal-email-row').style.display=sendSel.email?'':'none';
+  qs('modal-phone-row').style.display=sendSel.phone?'':'none';
+  qs('modal-send-btn').style.cssText='background:linear-gradient(135deg,#b8940f,#d4af37);color:#07101f;flex:1;border-radius:9px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:var(--font);';
+}
+function toggleSend(k){ sendSel[k]=!sendSel[k]; renderModalOpts(); }
+function doSend(){
+  var msgs=[];
+  if(sendSel.email) msgs.push('email');
+  if(sendSel.phone) msgs.push('SMS');
+  if(sendSel.account) msgs.push('account');
+  closeModal();
+  toast(msgs.length?'Receipt sent via '+msgs.join(', ')+'!':'Please select a delivery method.',!!msgs.length);
+}
+
+// ─── BUILD PAGES ──────────────────────────────────────────────────────────────
+function buildPages(){
+  var pages=qs('pages'); pages.innerHTML='';
+  Object.keys(charts).forEach(function(k){try{charts[k].destroy();}catch(e){}});
+  charts={};
+  var builders={admin:buildAdminPages,finance:buildFinancePages,ops:buildOpsPages,citizen:buildCitizenPages};
+  if(builders[currentRole]) builders[currentRole](pages);
+}
+
+// ── HELPERS ──
+function ph(title,sub){ return '<div class="ph"><div class="ph-row"><h1>'+title+'</h1></div>'+(sub?'<p>'+sub+'</p>':'')+'</div>'; }
+function card(title,inner,accentColor){
+  return '<div class="card"><div class="card-hdr"><span class="card-title" style="border-left:2px solid '+(accentColor||acc())+';padding-left:8px">'+title+'</span></div>'+inner+'</div>';
+}
+function canvasDiv(id,h){ return '<div class="cw" style="height:'+(h||200)+'px"><canvas id="'+id+'"></canvas></div>'; }
+function kstrip(cells,cols){
+  var s='<div class="kstrip" style="grid-template-columns:repeat('+(cols||cells.length)+',1fr)">';
+  cells.forEach(function(c){
+    s+='<div class="kcard" style="--kcolor:'+c[2]+'"><div class="klbl">'+c[0]+'</div><div class="kval" style="color:'+c[2]+'">'+c[1]+'</div>'+(c[3]?'<div class="kdelta">'+c[3]+'</div>':'')+'</div>';
+  });
+  return s+'</div>';
+}
+function alert_(msg){ return '<div class="alert" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#fca5a5"><div class="alert-icon" style="background:#ef4444">!</div><div>'+msg+'</div></div>'; }
+function mkPage(id,html){
+  var d=document.createElement('div');
+  d.id='p-'+id; d.className='page';
+  d.innerHTML=html;
+  return d;
+}
+
+// ─── ADMIN PAGES ─────────────────────────────────────────────────────────────
+function buildAdminPages(pages){
+  var a=acc();
+  // OVERVIEW
+  pages.appendChild(mkPage('a-overview',
+    ph('City Overview','Live status across all 8 parking zones · Riverton Smart Parking System')
+    +alert_('<strong>3 Critical issues active:</strong> Z4 at capacity · $46M in fines uncollected (2.2% rate) · 50.6% officer certifications expired')
+    +kstrip([['Total Citations','751K','#3b82f6','Aug 2025 – Mar 2026'],['Fines Uncollected','$46M','#ef4444','97.8% at risk'],['Invalid Citations','10%','#ef4444','75,014 wrongful'],['Permit Wait Time','3–5 days','#f59e0b','target: 2 hrs'],['Citizen Complaints','49,810','#8b5cf6','all 8 zones']],5)
+    +'<div class="g2">'
+    +card('Fines Issued vs Collected — Monthly',canvasDiv('ac-gap',200),a)
+    +card('Citation Status Split',canvasDiv('ac-status',200),a)
+    +'</div>'
+    +card('Root Cause Analysis',
+      '<div class="g3" style="margin:0">'
+      +'<div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:9px;padding:14px"><div style="font-size:9px;font-family:var(--mono);color:#ef4444;margin-bottom:6px;letter-spacing:0.1em">CRITICAL · REVENUE</div><div style="font-size:14px;font-weight:700;margin-bottom:5px">$46M Uncollected Fines</div><div style="font-size:12px;color:var(--txt2);line-height:1.6">No payment escalation pipeline exists. Fines expire with zero follow-up. Immediate system intervention required.</div><div style="margin-top:10px"><span class="tag" style="background:rgba(239,68,68,0.12);color:#ef4444">2.2% collection rate</span></div></div>'
+      +'<div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:9px;padding:14px"><div style="font-size:9px;font-family:var(--mono);color:#f59e0b;margin-bottom:6px;letter-spacing:0.1em">HIGH · OPERATIONS</div><div style="font-size:14px;font-weight:700;margin-bottom:5px">3–5 Day Permit Delays</div><div style="font-size:12px;color:var(--txt2);line-height:1.6">Paper forms, manual review and batch uploads create avoidable delays. Residents wait days for basic permit approvals.</div><div style="margin-top:10px"><span class="tag" style="background:rgba(245,158,11,0.12);color:#f59e0b">49,810 complaints</span></div></div>'
+      +'<div style="background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);border-radius:9px;padding:14px"><div style="font-size:9px;font-family:var(--mono);color:#3b82f6;margin-bottom:6px;letter-spacing:0.1em">HIGH · ENFORCEMENT</div><div style="font-size:14px;font-weight:700;margin-bottom:5px">10% Invalid Citations</div><div style="font-size:12px;color:var(--txt2);line-height:1.6">Permit data lags 2–4 hours on officer devices. Officers ticket valid permitted cars due to stale data.</div><div style="margin-top:10px"><span class="tag" style="background:rgba(59,130,246,0.12);color:#3b82f6">75,014 wrongful</span></div></div>'
+      +'</div>',a)
+  ));
+
+  // ZONES
+  var zPage=mkPage('a-zones',
+    ph('Parking Zones','Live status · 8 active zones across Riverton')
+    +'<div class="zone-map" id="az-grid"></div>'
+    +card('Zone Citations & Complaints Comparison',canvasDiv('ac-zones',220),a)
+  );
+  pages.appendChild(zPage);
+
+  // PERMITS
+  pages.appendChild(mkPage('a-permits',
+    ph('Permit Oversight','Review and approve pending applications · manage active permits')
+    +kstrip([['Active Permits','12,840','#3b82f6'],['Pending Review','<span id="kpi-pending">847</span>','#f59e0b'],['Expired This Month','1,203','#ef4444'],['Avg Approval Time','3.8 days','#ef4444','target: 2 hrs']],4)
+    +card('Pending Applications — Action Required',
+      '<div style="display:flex;align-items:center;gap:10px;padding:10px 13px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:8px;margin-bottom:14px;font-size:12px;color:#f59e0b">'
+      +'<span style="font-size:16px">⏳</span>'
+      +'<span>New applications submitted by citizens appear here in real-time. <strong>Switch to the Citizen role, apply for a permit, then return here to approve it.</strong></span>'
+      +'</div>'
+      +'<div id="permit-queue"><div style="text-align:center;padding:24px;color:var(--txt3);font-size:13px">No pending applications — queue is clear</div></div>',a)
+    +card('Permit Volume by Type',canvasDiv('ac-permits',200),a)
+  ));
+
+  // COMPLIANCE
+  pages.appendChild(mkPage('a-compliance',
+    ph('Compliance Monitor','Enforcement quality and coverage metrics')
+    +'<div class="g2">'
+    +card('Valid vs Invalid Citations by Zone',canvasDiv('ac-valid',200),a)
+    +card('Complaint Trend — Monthly',canvasDiv('ac-compl',200),a)
+    +'</div>'
+  ));
+
+  // STAKEHOLDERS
+  var stakeHtml=ph('Stakeholders','City departments and external partners');
+  stakeHtml+='<div class="g3">';
+  [['🏛','Parking Permit Office','Permit issuance, renewals, appeals'],['🚔','Enforcement Division','Officer deployment, citation management'],['💰','Finance Department','Revenue, fines, payment processing'],['💻','City IT','Systems, data infrastructure, integration'],['📞','Customer Service / 311','Resident inquiries, dispute resolution'],['🏘','Neighborhood Associations','Resident representation, zone feedback'],['🏪','Downtown Business Group','Commercial parking coordination'],['🎓','University Transport Office','Student/staff permit coordination'],['👥','Residents & Visitors','End users of the parking system']].forEach(function(x){
+    stakeHtml+='<div class="card" style="margin-bottom:0"><div style="font-size:22px;margin-bottom:8px">'+x[0]+'</div><div style="font-size:13px;font-weight:600;margin-bottom:4px">'+x[1]+'</div><div style="font-size:12px;color:var(--txt2)">'+x[2]+'</div></div>';
+  });
+  stakeHtml+='</div>';
+  pages.appendChild(mkPage('a-stake',stakeHtml));
+
+  nav('a-overview');
+  setTimeout(function(){
+    buildZoneTiles('az-grid',false);
+    stackedBar('ac-gap',MO,[
+      {label:'Collected',data:COLL,backgroundColor:'#10b981',stack:'s',borderRadius:3},
+      {label:'Uncollected',data:FINES.map(function(v,i){return v-COLL[i];}),backgroundColor:'rgba(239,68,68,0.2)',stack:'s'}
+    ]);
+    mkChart('ac-status','doughnut',{labels:['Paid','Unpaid','Appealed'],datasets:[{data:[33.6,33.3,33.1],backgroundColor:['#10b981','#ef4444','#f59e0b'],borderWidth:0}]},dOpts());
+    mkChart('ac-zones','bar',{labels:['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8'],datasets:[{label:'Citations (K)',data:[91,94,94,97,93,95,94,94],backgroundColor:'#3b82f6',borderRadius:3},{label:'Complaints',data:[6042,6274,6134,6394,6236,6292,6122,6316],backgroundColor:'#ef4444',borderRadius:3}]});
+    mkChart('ac-permits','bar',{labels:['Residential','Visitor','Commercial','Contractor','Temporary'],datasets:[{data:[18400,9200,6100,4800,11500],backgroundColor:['#3b82f6','#10b981','#8b5cf6','#f59e0b','#ef4444'],borderRadius:4}]});
+    mkChart('ac-valid','bar',{labels:['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8'],datasets:[{label:'Valid',data:[81904,84762,84348,86890,83978,85795,84313,84817],backgroundColor:'#3b82f6',stack:'s',borderRadius:3},{label:'Invalid',data:[9166,9434,9335,9721,9408,9592,9241,9117],backgroundColor:'rgba(239,68,68,0.4)',stack:'s'}]},Object.assign(bOpts(),{scales:{x:{ticks:{color:TC,font:{size:10}},grid:{display:false}},y:{stacked:true,ticks:{color:TC,font:{size:10}},grid:{color:GC}}}}));
+    mkChart('ac-compl','line',{labels:MO,datasets:[{data:[8120,7980,8250,8040,8380,8040],borderColor:'#8b5cf6',backgroundColor:'rgba(139,92,246,0.08)',fill:true,tension:0.4,pointRadius:3}]});
+  },50);
+}
+
+// ─── FINANCE PAGES ────────────────────────────────────────────────────────────
+function buildFinancePages(pages){
+  var a=acc();
+  pages.appendChild(mkPage('f-overview',
+    ph('Revenue Overview','Fine collection, payment rates, and revenue health')
+    +kstrip([['Total Fines Issued','$47.06M','#10b981','Aug 2025 – Mar 2026'],['Total Collected','$1.05M','#ef4444','2.2% rate'],['Uncollected','$46.0M','#ef4444','97.8% at risk'],['Appealed Fines','$15.6M','#f59e0b','33.1%'],['Projected Recovery','+$15M','#10b981','after SmartPark']],5)
+    +card('Monthly Fines vs Collections — The $46M Gap',canvasDiv('fc-trend',220),a)
+    +'<div class="g2">'
+    +card('Fine Revenue by Citation Type',canvasDiv('fc-type',180),a)
+    +card('Payment Status Distribution',canvasDiv('fc-status',180),a)
+    +'</div>'
+  ));
+
+  var finesHtml=ph('Fine Management','Outstanding citations, disputes, and zone breakdown');
+  finesHtml+=card('Outstanding Fines by Zone','');
+  var finesInner='';
+  [
+    ['Z4 — Downtown Core',95,'$2.1M'],
+    ['Z8 — Commerce Park',86,'$1.9M'],
+    ['Z2 — Elm Street',81,'$1.8M'],
+    ['Z6 — Medical Center',77,'$1.7M'],
+    ['Z5 — Riverside',72,'$1.6M'],
+    ['Z3 — University',65,'$1.4M'],
+    ['Z1 — Main Street',58,'$1.2M'],
+    ['Z7 — Historic Dist.',44,'$0.9M']
+  ].forEach(function(x){
+    var col = x[1] >= 80 ? '#ef4444' : x[1] >= 60 ? '#f59e0b' : '#10b981';
+    finesInner+='<div class="prog-row"><span class="prog-lbl" style="width:170px;font-size:12px;color:var(--txt2)">'+x[0]+'</span><div class="prog-track"><div class="prog-fill" style="width:'+x[1]+'%;background:'+col+'"></div></div><span class="prog-val" style="color:'+col+';width:44px;text-align:right">'+x[2]+'</span></div>';
+  });
+  finesHtml=ph('Fine Management','Outstanding citations, disputes, and zone breakdown')+card('Outstanding Fines by Zone',finesInner,a);
+  finesHtml+='<div class="g2">'+card('Appeals Status',
+    '<div style="display:flex;gap:20px;align-items:center;padding:8px 0">'
+    +'<div style="text-align:center"><div style="font-size:30px;font-weight:700;color:#f59e0b">50,239</div><div style="font-size:10px;font-family:var(--mono);color:var(--txt3);margin-top:3px">TOTAL APPEALS</div></div>'
+    +'<div style="text-align:center"><div style="font-size:30px;font-weight:700;color:#ef4444">0</div><div style="font-size:10px;font-family:var(--mono);color:var(--txt3);margin-top:3px">OVERTURNED</div></div>'
+    +'<div style="flex:1;font-size:12px;color:var(--txt2);line-height:1.7">Zero successful appeals logged — indicates systemic adjudication failure. 100% of appeals remain unresolved.</div>'
+    +'</div>',a)
+  +card('Citation Type Breakdown',canvasDiv('fc-ctype',160),a)+'</div>';
+  pages.appendChild(mkPage('f-fines',finesHtml));
+
+  pages.appendChild(mkPage('f-recovery',
+    ph('Recovery Pipeline','SmartPark automated payment escalation — 6-month projection')
+    +card('Revenue Recovery Ramp — Before vs After SmartPark',canvasDiv('fc-ramp',220),a)
+    +'<div class="g3">'
+    +'<div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:9px;padding:14px"><div style="font-size:9px;font-family:var(--mono);color:#10b981;margin-bottom:6px">7 DAYS</div><div style="font-size:14px;font-weight:700;margin-bottom:4px">📧 Email Reminder</div><div style="font-size:12px;color:var(--txt2)">Auto email to registered owner with secure payment portal link</div></div>'
+    +'<div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:9px;padding:14px"><div style="font-size:9px;font-family:var(--mono);color:#f59e0b;margin-bottom:6px">14 DAYS</div><div style="font-size:14px;font-weight:700;margin-bottom:4px">📱 SMS Escalation</div><div style="font-size:12px;color:var(--txt2)">Text message with urgency notice and accruing late fee warning</div></div>'
+    +'<div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:9px;padding:14px"><div style="font-size:9px;font-family:var(--mono);color:#ef4444;margin-bottom:6px">30 DAYS</div><div style="font-size:14px;font-weight:700;margin-bottom:4px">🚗 DMV Hold</div><div style="font-size:12px;color:var(--txt2)">Vehicle registration hold notification filed with Illinois DMV</div></div>'
+    +'</div>'
+  ));
+
+  pages.appendChild(mkPage('f-reports',
+    ph('Payment Reports','KPI tracking and before/after comparison')
+    +kstrip([['Current Rate','2.2%','#ef4444'],['Target Rate','34%','#10b981'],['Gap','$46M','#f59e0b'],['Projected Annual','+$15M','#10b981']],4)
+    +card('Before vs After SmartPark — Key KPIs',canvasDiv('fc-compare',200),a)
+  ));
+
+  nav('f-overview');
+  setTimeout(function(){
+    stackedBar('fc-trend',MO,[
+      {label:'Collected',data:COLL,backgroundColor:'#10b981',stack:'s',borderRadius:3},
+      {label:'Uncollected',data:FINES.map(function(v,i){return v-COLL[i];}),backgroundColor:'rgba(239,68,68,0.18)',stack:'s'}
+    ]);
+    mkChart('fc-type','bar',{labels:['No Permit','Overtime','Exp. Meter'],datasets:[{data:[15.79,15.65,15.62],backgroundColor:['#10b981','#34d399','#6ee7b7'],borderRadius:4}]},Object.assign(bOpts(),{scales:{x:{ticks:{color:TC,font:{size:10}},grid:{display:false}},y:{ticks:{color:TC,font:{size:10},callback:function(v){return '$'+v+'M';}},grid:{color:GC}}}}));
+    mkChart('fc-status','doughnut',{labels:['Paid','Unpaid','Appealed'],datasets:[{data:[33.6,33.3,33.1],backgroundColor:['#10b981','#ef4444','#f59e0b'],borderWidth:0}]},dOpts());
+    mkChart('fc-ctype','bar',{labels:['No Permit','Overtime','Exp. Meter'],datasets:[{data:[16793,16605,16602],backgroundColor:['#10b981','#059669','#047857'],borderRadius:4}]});
+    mkChart('fc-ramp','line',{labels:['M1','M2','M3','M4','M5','M6'],datasets:[{label:'Before',data:[150,152,148,155,150,151],borderColor:'#ef4444',borderDash:[4,4],tension:0.3,pointRadius:4},{label:'After',data:[320,680,1100,1600,2100,2500],borderColor:'#10b981',tension:0.4,pointRadius:4,fill:true,backgroundColor:'rgba(16,185,129,0.07)'}]},Object.assign(bOpts(),{scales:{x:{ticks:{color:TC,font:{size:10}},grid:{display:false}},y:{ticks:{color:TC,font:{size:10},callback:function(v){return '$'+v+'K';}},grid:{color:GC}}}}));
+    mkChart('fc-compare','bar',{labels:['Payment Rate (%)','Invalid Rate (%)'],datasets:[{label:'Before',data:[2.2,10],backgroundColor:'#ef4444',borderRadius:4},{label:'After SmartPark',data:[34,3.5],backgroundColor:'#10b981',borderRadius:4}]},Object.assign(bOpts(),{scales:{x:{ticks:{color:TC,font:{size:10}},grid:{display:false}},y:{ticks:{color:TC,font:{size:10},callback:function(v){return v+'%';}},grid:{color:GC},max:40}}}));
+  },50);
+}
+
+// ─── OPS PAGES ────────────────────────────────────────────────────────────────
+function buildOpsPages(pages){
+  var a=acc();
+  pages.appendChild(mkPage('o-overview',
+    ph('Operations HQ','Enforcement performance, zone coverage, citation quality')
+    +kstrip([['Total Citations','751K','#f59e0b'],['Invalid Rate','10%','#ef4444'],['Avg Response Time','12.5 min','#ef4444'],['Productivity Index','1.88','#f59e0b'],['Active Officers','500','#f59e0b']],5)
+    +'<div class="g2">'
+    +card('Citations by Shift',canvasDiv('oc-shift',190),a)
+    +card('Enforcement Source',canvasDiv('oc-src',190),a)
+    +'</div>'
+    +card('Response Time Trend by Quarter',canvasDiv('oc-rt',160),a)
+  ));
+
+  var wfHtml=ph('Workforce Analytics','Officer performance, certification and training status')
+    +kstrip([['Cert Expired','253','#ef4444','50.6% of force'],['No Training','241','#ef4444','48.2% incomplete'],['Absenteeism','4.9%','#f59e0b'],['Stability Index','40.74','#f59e0b']],4)
+    +'<div class="g2">'
+    +card('Certification Status',canvasDiv('oc-cert',180),a)
+    +card('Training Completion',canvasDiv('oc-train',180),a)
+    +'</div>'
+    +card('Top Officers — Citations &amp; Validity Rate','<table class="dtable"><thead><tr><th>Officer</th><th>Citations</th><th>Validity</th><th>Cert</th></tr></thead><tbody id="officer-tbody"></tbody></table>',a);
+  pages.appendChild(mkPage('o-workforce',wfHtml));
+
+  pages.appendChild(mkPage('o-quality',
+    ph('Citation Quality','Valid vs invalid breakdown, invalid source analysis')
+    +'<div class="g2">'
+    +card('Valid vs Invalid by Zone',canvasDiv('oc-valid',200),a)
+    +card('Invalid Citation Sources',canvasDiv('oc-invsrc',200),a)
+    +'</div>'
+    +card('Response Time — Before vs After SmartPark',canvasDiv('oc-rtcmp',180),a)
+  ));
+
+  pages.appendChild(mkPage('o-zones',
+    ph('Zone Performance','Full zone metrics breakdown')
+    +'<div class="g2">'
+    +card('Citations by Zone',canvasDiv('oc-zcit',200),a)
+    +card('Complaints by Zone',canvasDiv('oc-zcomp',200),a)
+    +'</div>'
+  ));
+
+  var dataHtml=ph('Full Data Access','Complete dataset — 751K citations, 500 officers, 8 zones')
+    +'<div class="g3">';
+  [['📊','Enforcement Dataset','50,000 records','enforcement_case2.csv'],['✅','Quality Dataset','50,000 records','quality_case2.csv'],['👤','Officer Dataset','500 records','officer_case2.csv']].forEach(function(x){
+    dataHtml+='<div class="card" style="cursor:pointer;margin-bottom:0" onclick="toast(\'Downloading '+x[3]+'…\')"><div style="font-size:24px;margin-bottom:9px">'+x[0]+'</div><div style="font-size:13px;font-weight:600;margin-bottom:4px">'+x[1]+'</div><div style="font-size:11px;color:var(--txt3);font-family:var(--mono);margin-bottom:8px">'+x[2]+' · CSV</div><div style="font-size:10px;font-family:var(--mono);color:'+a+'">'+x[3]+'</div></div>';
+  });
+  dataHtml+='</div>';
+  dataHtml+=card('Full KPI Comparison — Before vs After SmartPark',
+    '<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:0">'
+    +'<div style="font-family:var(--mono);font-size:9px;color:var(--txt3);padding:6px 8px;border-bottom:1px solid var(--bdr);text-transform:uppercase;letter-spacing:0.08em">Metric</div>'
+    +'<div style="font-family:var(--mono);font-size:9px;color:var(--txt3);padding:6px 8px;border-bottom:1px solid var(--bdr);text-transform:uppercase;letter-spacing:0.08em">Before</div>'
+    +'<div style="font-family:var(--mono);font-size:9px;color:var(--txt3);padding:6px 8px;border-bottom:1px solid var(--bdr);text-transform:uppercase;letter-spacing:0.08em">After</div>'
+    +'<div style="font-family:var(--mono);font-size:9px;color:var(--txt3);padding:6px 8px;border-bottom:1px solid var(--bdr);text-transform:uppercase;letter-spacing:0.08em">Change</div>'
+    +[['Payment Rate','2.2%','34%','+1,445%'],['Revenue Collected','$1.05M','$16M','+$15M'],['Invalid Citations','10%','3.5%','−65%'],['Permit Wait Time','3.8 days','2 hrs','−93%'],['Response Time','12.5 min','7.8 min','−38%'],['Complaints/Zone','6,220','3,200','−49%'],['Cert Compliance','49.4%','95%','+93%']].map(function(x){
+      return '<div style="font-size:12px;font-weight:600;padding:8px;border-bottom:1px solid rgba(255,255,255,0.03)">'+x[0]+'</div>'
+        +'<div style="font-size:12px;font-family:var(--mono);color:#ef4444;padding:8px;border-bottom:1px solid rgba(255,255,255,0.03)">'+x[1]+'</div>'
+        +'<div style="font-size:12px;font-family:var(--mono);color:#10b981;padding:8px;border-bottom:1px solid rgba(255,255,255,0.03)">'+x[2]+'</div>'
+        +'<div style="font-size:12px;font-family:var(--mono);color:#f59e0b;padding:8px;border-bottom:1px solid rgba(255,255,255,0.03)">'+x[3]+'</div>';
+    }).join('')
+    +'</div>',a);
+  pages.appendChild(mkPage('o-data',dataHtml));
+
+  // OPS CITATION RECORDS
+  var opsCitHtml = ph('Citation Records','Live citation log — all 751,821 citations across 8 zones');
+
+  // Filter + search bar
+  opsCitHtml += '<div style="display:flex;gap:9px;margin-bottom:16px;flex-wrap:wrap;align-items:center">'
+    +'<input class="search-input" placeholder="Search by officer, zone, plate, citation type…" style="flex:2;min-width:200px" id="cit-search" oninput="filterOfficerCits()">'
+    +'<select class="finput" id="cit-zone-filter" onchange="filterOfficerCits()" style="flex:1;min-width:120px">'
+    +'<option value="">All Zones</option>'
+    +['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8'].map(function(z){return '<option>'+z+'</option>';}).join('')
+    +'</select>'
+    +'<select class="finput" id="cit-type-filter" onchange="filterOfficerCits()" style="flex:1;min-width:140px">'
+    +'<option value="">All Types</option>'
+    +'<option>No Permit</option><option>Overtime</option><option>Expired Meter</option>'
+    +'</select>'
+    +'<select class="finput" id="cit-status-filter" onchange="filterOfficerCits()" style="flex:1;min-width:120px">'
+    +'<option value="">All Status</option>'
+    +'<option>Paid</option><option>Unpaid</option><option>Appealed</option>'
+    +'</select>'
+    +'</div>';
+
+  // KPI summary
+  opsCitHtml += '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--bdr-g);border:1px solid var(--bdr-g);border-radius:13px;overflow:hidden;margin-bottom:18px">'
+    +[['Total Citations','751,821','#fbbf24'],['No Permit','250,630','#ef4444'],['Overtime','249,839','#f59e0b'],['Expired Meter','251,352','#f59e0b'],['Invalid Rate','10.0%','#ef4444']].map(function(x){
+      return '<div style="background:var(--bg2);padding:13px 16px"><div class="klbl">'+x[0]+'</div><div class="kval" style="color:'+x[2]+'">'+x[1]+'</div></div>';
+    }).join('')+'</div>';
+
+  // Citation records table
+  var sampleCitations = [
+    ['CIT-2025-001','O9','Z4','No Permit','RVT-4829','Oct 12, 2025 10:34','$75.00','Unpaid','Invalid'],
+    ['CIT-2025-002','O122','Z2','Expired Meter','BXK-1192','Oct 12, 2025 10:41','$50.00','Paid','Valid'],
+    ['CIT-2025-003','O418','Z1','Overtime','MPL-7734','Oct 12, 2025 11:02','$30.00','Paid','Valid'],
+    ['CIT-2025-004','O9','Z4','No Permit','GHR-2280','Oct 12, 2025 11:15','$75.00','Appealed','Valid'],
+    ['CIT-2025-005','O465','Z3','Expired Meter','TAX-5591','Oct 12, 2025 11:33','$50.00','Unpaid','Valid'],
+    ['CIT-2025-006','O228','Z6','No Permit','PLK-9903','Oct 12, 2025 11:47','$75.00','Paid','Valid'],
+    ['CIT-2025-007','O303','Z8','Overtime','VNT-3317','Oct 12, 2025 12:05','$30.00','Unpaid','Invalid'],
+    ['CIT-2025-008','O122','Z2','No Permit','RRB-6642','Oct 12, 2025 12:22','$75.00','Paid','Valid'],
+    ['CIT-2025-009','O59','Z5','Expired Meter','WQZ-1108','Oct 12, 2025 12:38','$50.00','Unpaid','Valid'],
+    ['CIT-2025-010','O324','Z7','Overtime','YHF-4421','Oct 12, 2025 12:51','$30.00','Paid','Valid'],
+    ['CIT-2025-011','O9','Z4','No Permit','DSP-7753','Oct 12, 2025 13:04','$75.00','Unpaid','Valid'],
+    ['CIT-2025-012','O418','Z6','No Permit','LKM-3384','Oct 12, 2025 13:19','$75.00','Appealed','Valid'],
+    ['CIT-2025-013','O465','Z4','Overtime','BNT-9921','Oct 12, 2025 13:33','$30.00','Paid','Valid'],
+    ['CIT-2025-014','O228','Z3','Expired Meter','CRP-5567','Oct 12, 2025 13:47','$50.00','Unpaid','Invalid'],
+    ['CIT-2025-015','O303','Z1','No Permit','VXL-2234','Oct 12, 2025 14:02','$75.00','Paid','Valid'],
+  ];
+
+  opsCitHtml += '<div class="card" style="padding:0;overflow:hidden">'
+    +'<div style="padding:14px 16px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:10px">'
+    +'<span class="card-title">Citation Records</span>'
+    +'<span style="font-size:10px;font-family:var(--mono);color:var(--txt3);margin-left:4px">Showing sample of 751,821 records</span>'
+    +'<button onclick="toast(\'Exporting CSV…\')" class="btn btn-ghost btn-sm" style="margin-left:auto">Export CSV</button>'
+    +'</div>'
+    +'<div style="overflow-x:auto"><table class="dtable" id="ops-cit-table">'
+    +'<thead><tr>'
+    +'<th>Citation #</th><th>Officer</th><th>Zone</th><th>Type</th><th>Plate</th><th>Date & Time</th><th>Fine</th><th>Status</th><th>Validity</th><th>Action</th>'
+    +'</tr></thead>'
+    +'<tbody id="ops-cit-tbody">'
+    + sampleCitations.map(function(r){
+        var statusColor = r[7]==='Paid'?'#10b981':r[7]==='Unpaid'?'#ef4444':'#f59e0b';
+        var statusBg    = r[7]==='Paid'?'rgba(16,185,129,.12)':r[7]==='Unpaid'?'rgba(239,68,68,.12)':'rgba(245,158,11,.12)';
+        var validColor  = r[8]==='Valid'?'#10b981':'#ef4444';
+        var validBg     = r[8]==='Valid'?'rgba(16,185,129,.1)':'rgba(239,68,68,.1)';
+        return '<tr data-type="'+r[3]+'" data-zone="'+r[2]+'" data-status="'+r[7]+'">'
+          +'<td><span style="font-family:var(--mono);font-size:11px;color:var(--gold3)">'+r[0]+'</span></td>'
+          +'<td><span style="font-weight:700;color:var(--txt)">'+r[1]+'</span></td>'
+          +'<td><span class="tag" style="background:rgba(212,175,55,.1);color:var(--gold3)">'+r[2]+'</span></td>'
+          +'<td style="color:var(--txt)">'+r[3]+'</td>'
+          +'<td><span style="font-family:var(--mono);font-size:11px;color:var(--txt2)">'+r[4]+'</span></td>'
+          +'<td style="font-size:11px;font-family:var(--mono)">'+r[5]+'</td>'
+          +'<td><span style="font-weight:700;color:'+statusColor+'">'+r[6]+'</span></td>'
+          +'<td><span class="tag" style="background:'+statusBg+';color:'+statusColor+'">'+r[7]+'</span></td>'
+          +'<td><span class="tag" style="background:'+validBg+';color:'+validColor+'">'+r[8]+'</span></td>'
+          +'<td><button onclick="toast(\'Viewing citation '+r[0]+'…\')" style="font-size:10px;background:none;border:1px solid var(--bdr2);color:var(--txt3);padding:3px 8px;border-radius:5px;cursor:pointer;font-family:var(--mono)">View</button></td>'
+          +'</tr>';
+      }).join('')
+    +'</tbody></table></div></div>';
+
+  // Pagination indicator
+  opsCitHtml += '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;font-size:12px;color:var(--txt3);font-family:var(--mono)">'
+    +'<span>Showing 15 of 751,821 records · Use search/filters to narrow down</span>'
+    +'<div style="display:flex;gap:6px">'
+    +'<button onclick="toast(\'Previous page\')" class="btn btn-ghost btn-sm">← Prev</button>'
+    +'<span style="padding:6px 12px;background:rgba(212,175,55,.1);border-radius:7px;color:var(--gold3);border:1px solid var(--bdr-g)">1</span>'
+    +'<button onclick="toast(\'Next page\')" class="btn btn-ghost btn-sm">Next →</button>'
+    +'</div></div>';
+
+  pages.appendChild(mkPage('o-citations', opsCitHtml));
+
+  // ── ISSUE NEW CITATION ───────────────────────────────────────────────────────
+  var issueHtml = ph('Issue New Citation','Log a parking violation in real time');
+
+  issueHtml += '<div class="g13">'
+
+  // LEFT — form
+  + '<div>'
+
+  // Step 1: Plate lookup
+  + '<div class="card">'
+  + '<div class="card-hdr"><span class="card-title" style="border-left:2px solid var(--gold);padding-left:8px">Step 1 — Plate Lookup</span></div>'
+  + '<div style="display:flex;gap:8px;margin-bottom:12px">'
+  + '<input class="finput" id="ci-plate" placeholder="Enter license plate e.g. RVT-4829" style="flex:1;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">'
+  + '<button class="btn btn-primary" onclick="lookupPlate()">Check Permit</button>'
+  + '</div>'
+  + '<div id="ci-plate-result" style="display:none;border-radius:10px;padding:13px 15px;font-size:13px"></div>'
+  + '</div>'
+
+  // Step 2: Violation details
+  + '<div class="card">'
+  + '<div class="card-hdr"><span class="card-title" style="border-left:2px solid var(--gold);padding-left:8px">Step 2 — Violation Details</span></div>'
+  + '<div class="frow2">'
+  + '<div class="fgrp"><div class="flbl">Citation Type</div>'
+  + '<select class="finput" id="ci-type" onchange="updateFineAmt()">'
+  + '<option value="">— Select type —</option>'
+  + '<option value="No Permit" data-amt="75">No Permit ($75.00)</option>'
+  + '<option value="Expired Meter" data-amt="50">Expired Meter ($50.00)</option>'
+  + '<option value="Overtime" data-amt="30">Overtime Parking ($30.00)</option>'
+  + '<option value="Blocking" data-amt="100">Blocking / Fire Lane ($100.00)</option>'
+  + '<option value="Handicap" data-amt="250">Handicap Zone Violation ($250.00)</option>'
+  + '<option value="Double Park" data-amt="65">Double Parking ($65.00)</option>'
+  + '</select></div>'
+  + '<div class="fgrp"><div class="flbl">Zone</div>'
+  + '<select class="finput" id="ci-zone">'
+  + '<option value="">— Select zone —</option>'
+  + ['Z1 — Main Street','Z2 — Elm Street','Z3 — University','Z4 — Downtown Core','Z5 — Riverside','Z6 — Medical Center','Z7 — Historic Dist.','Z8 — Commerce Park'].map(function(z){ return '<option>'+z+'</option>'; }).join('')
+  + '</select></div>'
+  + '</div>'
+  + '<div class="frow2">'
+  + '<div class="fgrp"><div class="flbl">Spot / Meter Number</div><input class="finput" id="ci-spot" placeholder="e.g. A-07 or Meter #224"></div>'
+  + '<div class="fgrp"><div class="flbl">Vehicle Color</div><input class="finput" id="ci-color" placeholder="e.g. Silver"></div>'
+  + '</div>'
+  + '<div class="frow2">'
+  + '<div class="fgrp"><div class="flbl">Vehicle Make / Model</div><input class="finput" id="ci-make" placeholder="e.g. Honda Civic"></div>'
+  + '<div class="fgrp"><div class="flbl">State</div><select class="finput" id="ci-state"><option>IL</option><option>MO</option><option>IN</option><option>WI</option><option>IA</option><option>Other</option></select></div>'
+  + '</div>'
+  + '<div class="fgrp"><div class="flbl">Officer Notes / Evidence</div>'
+  + '<textarea class="finput" id="ci-notes" rows="3" placeholder="Describe the violation — meter expiry time, permit check result, duration of overstay…" style="resize:vertical"></textarea>'
+  + '</div>'
+  + '</div>'
+
+  // Step 3: Officer + timestamp
+  + '<div class="card">'
+  + '<div class="card-hdr"><span class="card-title" style="border-left:2px solid var(--gold);padding-left:8px">Step 3 — Officer & Timestamp</span></div>'
+  + '<div class="frow2">'
+  + '<div class="fgrp"><div class="flbl">Issuing Officer</div>'
+  + '<select class="finput" id="ci-officer">'
+  + ['O9 — Zone Z4','O122 — Zone Z2','O418 — Zone Z6','O465 — Zone Z1','O228 — Zone Z7','O303 — Zone Z5','O59 — Zone Z8','O324 — Zone Z3'].map(function(o){ return '<option>'+o+'</option>'; }).join('')
+  + '</select></div>'
+  + '<div class="fgrp"><div class="flbl">Date & Time of Violation</div><input class="finput" type="datetime-local" id="ci-datetime"></div>'
+  + '</div>'
+  + '<div class="fgrp"><div class="flbl">Enforcement Source</div>'
+  + '<div style="display:flex;gap:8px">'
+  + ['Officer Patrol','Speed Camera','Sensor / IoT','Resident Report'].map(function(src){
+      return '<label style="display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:8px;border:1px solid var(--bdr2);cursor:pointer;font-size:12px;font-weight:600;color:var(--txt2);transition:all .12s" onmouseover="this.style.borderColor=\'var(--gold)\'" onmouseout="this.style.borderColor=\'var(--bdr2)\'"><input type="radio" name="ci-source" value="'+src+'" style="accent-color:var(--gold)">'+src+'</label>';
+    }).join('')
+  + '</div></div>'
+  + '</div>'
+
+  // Submit button
+  + '<button class="btn btn-success btn-block" style="font-size:14px;padding:13px" onclick="submitCitation()">'
+  + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg>'
+  + 'Issue Citation'
+  + '</button>'
+  + '</div>'
+
+  // RIGHT — live preview
+  + '<div>'
+  + '<div class="card" id="ci-preview" style="position:sticky;top:20px">'
+  + '<div class="card-hdr"><span class="card-title" style="border-left:2px solid var(--gold);padding-left:8px">Citation Preview</span>'
+  + '<span id="ci-preview-badge" style="font-size:9px;font-family:var(--mono);padding:2px 8px;border-radius:4px;background:rgba(239,68,68,.12);color:#ef4444">DRAFT</span>'
+  + '</div>'
+
+  // Preview receipt card
+  + '<div style="background:linear-gradient(135deg,#1c3860,#0c1a32);border:1px solid var(--bdr-g);border-radius:12px;padding:16px;margin-bottom:14px">'
+  + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">'
+  + '<div style="width:40px;height:40px;border-radius:10px;background:rgba(212,175,55,.15);display:flex;align-items:center;justify-content:center;font-size:18px">🚔</div>'
+  + '<div><div style="font-size:12px;font-weight:700;color:var(--gold3)">CITY OF RIVERTON</div>'
+  + '<div style="font-size:10px;color:var(--txt3);font-family:var(--mono)">Parking Enforcement Division</div></div>'
+  + '<div style="margin-left:auto;text-align:right"><div style="font-size:11px;font-family:var(--mono);color:var(--txt3)">REF</div>'
+  + '<div style="font-size:13px;font-weight:700;color:var(--gold3)" id="prev-ref">AUTO-ASSIGNED</div></div>'
+  + '</div>'
+  + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
+  + [['Plate','prev-plate','—'],['Type','prev-type','—'],['Zone','prev-zone','—'],['Spot','prev-spot','—'],['Officer','prev-officer','—'],['Date/Time','prev-dt','—']].map(function(x){
+      return '<div style="background:rgba(255,255,255,.05);border-radius:6px;padding:8px 10px">'
+        +'<div style="font-size:9px;font-family:var(--mono);color:var(--txt3);text-transform:uppercase;margin-bottom:2px">'+x[0]+'</div>'
+        +'<div style="font-size:12px;font-weight:600;color:var(--txt)" id="'+x[1]+'">'+x[2]+'</div></div>';
+    }).join('')
+  + '</div>'
+  + '<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center">'
+  + '<div style="font-size:10px;color:var(--txt3)">Fine Amount</div>'
+  + '<div style="font-size:22px;font-weight:800;color:#ef4444" id="prev-amt">$—</div>'
+  + '</div></div>'
+
+  // Notes preview
+  + '<div style="background:var(--bg3);border-radius:9px;padding:12px 14px;border:1px solid var(--bdr)">'
+  + '<div style="font-size:10px;font-family:var(--mono);color:var(--gold);margin-bottom:5px;text-transform:uppercase;letter-spacing:.08em;opacity:.8">Officer Notes</div>'
+  + '<div style="font-size:12px;color:var(--txt2);font-style:italic" id="prev-notes">Notes will appear here…</div>'
+  + '</div>'
+
+  + '<div style="margin-top:14px;font-size:11px;color:var(--txt3);text-align:center">Preview updates as you fill the form</div>'
+  + '</div>'
+
+  // Recent issued (today)
+  + '<div class="card" style="margin-top:0">'
+  + '<div class="card-hdr"><span class="card-title" style="border-left:2px solid var(--gold);padding-left:8px">Issued Today</span>'
+  + '<span style="font-size:10px;font-family:var(--mono);color:var(--txt3)" id="issued-count-lbl">0 citations</span>'
+  + '</div>'
+  + '<div id="issued-today-list"><div style="text-align:center;padding:16px;font-size:12px;color:var(--txt3)">No citations issued this session</div></div>'
+  + '</div>'
+  + '</div>'
+  + '</div>'; // close g13
+
+  pages.appendChild(mkPage('o-issue', issueHtml));
+
+  nav('o-overview');
+  setTimeout(function(){
+    mkChart('oc-shift','bar',{labels:['Morning','Evening','Night'],datasets:[{data:[252563,249977,249281],backgroundColor:['#f59e0b','#d97706','#b45309'],borderRadius:4}]});
+    mkChart('oc-src','doughnut',{labels:['Officer','Camera','Sensor'],datasets:[{data:[16737,16662,16601],backgroundColor:['#f59e0b','#d97706','#b45309'],borderWidth:0}]},dOpts());
+    mkChart('oc-rt','line',{labels:['Qtr 1','Qtr 2','Qtr 3','Qtr 4'],datasets:[{data:[12.53,12.46,12.47,12.47],borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.08)',fill:true,tension:0.4,pointRadius:4}]},Object.assign(bOpts(),{scales:{x:{ticks:{color:TC,font:{size:10}},grid:{display:false}},y:{ticks:{color:TC,font:{size:10},callback:function(v){return v+' min';}},grid:{color:GC},min:12,max:13}}}));
+    mkChart('oc-cert','doughnut',{labels:['Valid','Expired'],datasets:[{data:[247,253],backgroundColor:['#f59e0b','#ef4444'],borderWidth:0}]},dOpts());
+    mkChart('oc-train','doughnut',{labels:['Completed','Incomplete'],datasets:[{data:[259,241],backgroundColor:['#f59e0b','#ef4444'],borderWidth:0}]},dOpts());
+    mkChart('oc-valid','bar',{labels:['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8'],datasets:[{label:'Valid',data:[81904,84762,84348,86890,83978,85795,84313,84817],backgroundColor:'#f59e0b',stack:'s',borderRadius:3},{label:'Invalid',data:[9166,9434,9335,9721,9408,9592,9241,9117],backgroundColor:'rgba(239,68,68,0.35)',stack:'s'}]},Object.assign(bOpts(),{scales:{x:{ticks:{color:TC,font:{size:10}},grid:{display:false}},y:{stacked:true,ticks:{color:TC,font:{size:10}},grid:{color:GC}}}}));
+    mkChart('oc-invsrc','doughnut',{labels:['Data lag (70%)','Officer error (22%)','System glitch (8%)'],datasets:[{data:[70,22,8],backgroundColor:['#ef4444','#f59e0b','#3b82f6'],borderWidth:0}]},dOpts());
+    mkChart('oc-rtcmp','bar',{labels:['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8'],datasets:[{label:'Before',data:[12.5,12.4,12.5,12.5,12.5,12.4,12.5,12.5],backgroundColor:'#ef4444',borderRadius:3},{label:'After',data:[7.8,7.9,8.0,7.6,7.7,7.9,8.1,7.7],backgroundColor:'#10b981',borderRadius:3}]},Object.assign(bOpts(),{scales:{x:{ticks:{color:TC,font:{size:10}},grid:{display:false}},y:{ticks:{color:TC,font:{size:10},callback:function(v){return v+' min';}},grid:{color:GC},min:0,max:15}}}));
+    mkChart('oc-zcit','bar',{labels:['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8'],datasets:[{data:[91070,94196,93683,96611,93386,95387,93554,93934],backgroundColor:'#f59e0b',borderRadius:3}]});
+    mkChart('oc-zcomp','bar',{labels:['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8'],datasets:[{data:[6042,6274,6134,6394,6236,6292,6122,6316],backgroundColor:'#ef4444',borderRadius:3}]});
+    // officer table
+    var tb=qs('officer-tbody');
+    if(tb)[['O9',2005,96.2,'Valid'],['O122',1920,95.1,'Valid'],['O418',1901,94.3,'Expired'],['O465',1891,93.8,'Valid'],['O228',1890,92.1,'Expired'],['O324',1886,91.4,'Valid']].forEach(function(x){
+      var rc=x[2]>=95?'#10b981':x[2]>=90?'#f59e0b':'#ef4444';
+      var tr=document.createElement('tr');
+      tr.innerHTML='<td style="font-weight:600;color:'+a+';font-family:var(--mono)">'+x[0]+'</td><td>'+x[1].toLocaleString()+'</td>'
+        +'<td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;background:var(--bg4);border-radius:3px;height:5px;overflow:hidden"><div style="width:'+x[2]+'%;height:100%;background:'+rc+';border-radius:3px"></div></div><span style="font-family:var(--mono);font-size:11px;color:'+rc+'">'+x[2]+'%</span></div></td>'
+        +'<td><span class="tag" style="background:'+(x[3]==='Valid'?'rgba(16,185,129,0.12)':'rgba(239,68,68,0.12)')+';color:'+(x[3]==='Valid'?'#10b981':'#ef4444')+'">'+x[3]+'</span></td>';
+      tb.appendChild(tr);
+    });
+  },50);
+}
+
+// ─── CITIZEN PAGES ────────────────────────────────────────────────────────────
+function buildCitizenPages(pages){
+  var a=acc();
+
+  // FIND
+  var findPage=mkPage('c-find',
+    ph('Find My Parking','Live zone availability across the City of Riverton')
+    +'<div class="search-bar"><input class="search-input" id="dest-in" placeholder="Enter destination, street or zone…"><button class="btn btn-primary" onclick="doSearch()">Search</button><button class="btn btn-ghost" onclick="doGPS()">📍 My Location</button></div>'
+    +'<div style="display:flex;gap:14px;margin-bottom:12px;font-size:12px;font-weight:500;color:var(--txt2)">'
+    +'<span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:#10b981;display:inline-block"></span>Available</span>'
+    +'<span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:#f59e0b;display:inline-block"></span>Busy</span>'
+    +'<span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:#ef4444;display:inline-block"></span>Full</span>'
+    +'<span style="margin-left:auto;font-size:11px;color:var(--txt3)">Tap a zone to see individual spots</span></div>'
+    +'<div class="map-bg"><div class="map-label">City of Riverton — Live Parking Map</div><div class="zone-map" id="cit-zone-grid"></div></div>'
+    +'<div class="spot-panel" id="spot-panel">'
+    +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">'
+    +'<div style="flex:1"><div style="font-size:15px;font-weight:700" id="sp-title">—</div><div style="font-size:12px;color:var(--txt2);font-family:var(--mono);margin-top:2px" id="sp-sub">—</div></div>'
+    +'<button class="btn btn-primary" id="sp-res-btn" onclick="goToReserve()">Reserve This Spot</button>'
+    +'<button class="btn btn-ghost btn-sm" onclick="qs(\'spot-panel\').classList.remove(\'show\')">✕</button>'
+    +'</div>'
+    +'<div style="font-size:10px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px">Tap a green spot to select</div>'
+    +'<div class="spot-grid" id="sp-grid"></div>'
+    +'<div id="sp-dir" style="display:none">'
+    +'<div class="dir-card"><div class="dir-label">YOUR PARKING SPOT</div><div class="dir-spot" id="dir-spot">—</div><div class="dir-info" id="dir-info">—</div><div id="dir-steps"></div></div>'
+    +'</div></div>'
+  );
+  pages.appendChild(findPage);
+
+  // RESERVE
+  var resPage=mkPage('c-reserve',ph('Reserve a Spot',''));
+  var wizBar=document.createElement('div'); wizBar.className='wizard';
+  ['Zone & Time','Pick Spot','Payment','Confirmed'].forEach(function(lbl,i){
+    if(i>0){var ln=document.createElement('div');ln.className='wline';wizBar.appendChild(ln);}
+    var ws=document.createElement('div');ws.className='wstep';
+    ws.innerHTML='<div class="wnum" id="wn-'+(i+1)+'" style="'+(i===0?'background:'+a+';color:#fff;':'border:2px solid var(--bdr2);color:var(--txt3);')+'">'+(i+1)+'</div><div class="wlbl" id="wl-'+(i+1)+'" style="color:'+(i===0?a:'var(--txt3)')+'">'+lbl+'</div>';
+    wizBar.appendChild(ws);
+  });
+  resPage.appendChild(wizBar);
+
+  var ws1=document.createElement('div'); ws1.id='ws-1';
+  ws1.innerHTML='<div class="g2"><div class="card"><div class="card-hdr"><span class="card-title" style="border-left:2px solid '+a+';padding-left:8px">Select Zone</span></div><div id="res-zones"></div></div>'
+    +'<div class="card"><div class="card-hdr"><span class="card-title" style="border-left:2px solid '+a+';padding-left:8px">Date &amp; Time</span></div>'
+    +'<div class="fgrp"><div class="flbl">Date</div><input class="finput" type="date" id="r-date"></div>'
+    +'<div class="frow2"><div class="fgrp"><div class="flbl">From</div><input class="finput" type="time" id="r-from" value="09:00"></div><div class="fgrp"><div class="flbl">Until</div><input class="finput" type="time" id="r-to" value="11:00"></div></div>'
+    +'<div class="fgrp"><div class="flbl">License Plate</div><input class="finput" value="RVT-4829"></div>'
+    +'<button class="btn btn-primary btn-block" onclick="goWS(2)">Continue to Spot Selection →</button></div></div>';
+  resPage.appendChild(ws1);
+
+  var ws2=document.createElement('div'); ws2.id='ws-2'; ws2.style.display='none';
+  ws2.innerHTML='<div class="card"><div class="card-hdr"><span class="card-title" style="border-left:2px solid '+a+';padding-left:8px">Choose Your Spot — <span id="ws2-zone">Zone Z2</span></span></div>'
+    +'<div class="spot-grid" id="res-spot-grid"></div>'
+    +'<div id="res-chosen" style="display:none;margin-top:12px;background:var(--bg3);border:1px solid '+a+';border-radius:9px;padding:13px 15px">'
+    +'<div style="display:flex;align-items:center;gap:11px"><div style="font-size:20px">🅿</div><div><div style="font-size:14px;font-weight:700;color:'+a+'" id="res-chosen-lbl">Spot —</div></div><button class="btn btn-primary btn-sm" style="margin-left:auto" onclick="goWS(3)">Proceed to Payment →</button></div>'
+    +'</div></div>';
+  resPage.appendChild(ws2);
+
+  var ws3=document.createElement('div'); ws3.id='ws-3'; ws3.style.display='none';
+  ws3.innerHTML='<div class="g13"><div class="card"><div class="card-hdr"><span class="card-title" style="border-left:2px solid '+a+';padding-left:8px">Summary</span></div>'
+    +'<div style="display:flex;flex-direction:column;gap:10px">'
+    +[['Zone','sum-zone'],['Spot','sum-spot'],['Date','sum-date'],['Time','sum-time'],['Rate','sum-rate']].map(function(x){return '<div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--txt2)">'+x[0]+'</span><span style="font-weight:600" id="'+x[1]+'">—</span></div>';}).join('')
+    +'<div style="display:flex;justify-content:space-between;font-size:15px;font-weight:700;padding-top:10px;border-top:1px solid var(--bdr)"><span>Total</span><span style="color:'+a+'" id="sum-total">—</span></div>'
+    +'</div></div>'
+    +'<div class="card"><div class="card-hdr"><span class="card-title" style="border-left:2px solid '+a+';padding-left:8px">Payment</span></div>'
+    +'<div style="background:var(--bg3);border:1px solid var(--bdr2);border-radius:9px;padding:14px;margin-bottom:14px"><div style="font-size:10px;font-family:var(--mono);color:var(--txt3);margin-bottom:3px">TOTAL DUE</div><div style="font-size:30px;font-weight:700;color:'+a+'" id="pay-total">—</div></div>'
+    +'<div class="fgrp"><div class="flbl">Card Number</div><input class="finput" value="•••• •••• •••• 4829"></div>'
+    +'<div class="frow2"><div class="fgrp"><div class="flbl">Expiry</div><input class="finput" value="09/27"></div><div class="fgrp"><div class="flbl">CVV</div><input class="finput" value="•••"></div></div>'
+    +'<button class="btn btn-success btn-block" onclick="confirmResPay()">✓ Confirm &amp; Pay</button></div></div>';
+  resPage.appendChild(ws3);
+
+  var ws4=document.createElement('div'); ws4.id='ws-4'; ws4.style.display='none';
+  ws4.innerHTML='<div class="card" style="text-align:center;padding:36px 20px">'
+    +'<div style="font-size:48px;margin-bottom:12px">🎉</div>'
+    +'<div style="font-size:21px;font-weight:700;color:#10b981;margin-bottom:6px">Booking Confirmed!</div>'
+    +'<div style="font-size:14px;color:var(--txt2);margin-bottom:20px" id="conf-detail">—</div>'
+    +'<div style="background:var(--bg3);border-radius:10px;padding:16px 24px;display:inline-flex;flex-direction:column;align-items:center;margin-bottom:20px;border:1px solid var(--bdr2)">'
+    +'<div style="font-size:10px;color:var(--txt3);font-family:var(--mono);margin-bottom:3px">BOOKING CODE</div>'
+    +'<div style="font-size:24px;font-weight:700;color:'+a+';font-family:var(--mono)" id="conf-code">—</div></div><br>'
+    +'<div style="display:flex;gap:10px;justify-content:center;margin-top:12px">'
+    +'<button class="btn btn-primary" onclick="openModal(\'booking\')">📧 Send Receipt</button>'
+    +'<button class="btn btn-ghost" onclick="nav(\'c-find\')">Back to Map</button></div></div>';
+  resPage.appendChild(ws4);
+  pages.appendChild(resPage);
+
+  // PERMITS
+  var permHtml=ph('My Permits','')+'<div style="display:flex;justify-content:flex-end;margin-bottom:14px"><button class="btn btn-primary btn-sm" onclick="nav(\'c-apply\')">+ Apply for Permit</button></div>';
+  // Compute permit status dynamically against today's real date
+  var today = new Date();
+  function permitStatus(expiryStr){
+    var exp = new Date(expiryStr);
+    var diff = Math.round((exp - today) / (1000*60*60*24));
+    if(diff < 0) return {label:'EXPIRED', bg:'rgba(239,68,68,0.15)', col:'#ef4444', valCol:'#ef4444'};
+    if(diff === 0) return {label:'EXPIRES TODAY', bg:'rgba(239,68,68,0.15)', col:'#ef4444', valCol:'#ef4444'};
+    if(diff <= 7) return {label:diff+' DAY'+(diff===1?'':'S')+' LEFT', bg:'rgba(245,158,11,0.15)', col:'#f59e0b', valCol:'#f59e0b'};
+    if(diff <= 30) return {label:diff+' DAYS LEFT', bg:'rgba(245,158,11,0.12)', col:'#f59e0b', valCol:'#f59e0b'};
+    return {label:'ACTIVE', bg:'rgba(16,185,129,0.15)', col:'#10b981', valCol:'#10b981'};
+  }
+
+  var permit1 = permitStatus('2025-12-31');
+  var permit2 = permitStatus('2025-10-22');
+
+  [
+    ['🏠','rgba(59,130,246,0.12)','Residential — Zone Z2','#RES-2025-00391 · Issued Aug 1, 2025',permit1.label,permit1.bg,permit1.col,'RVT-4829','Z2 · Elm St','Residential','Dec 31, 2025',permit1.valCol],
+    ['🚗','rgba(245,158,11,0.12)','Visitor Pass — Downtown','#VIS-2025-10445 · Issued Oct 15, 2025',permit2.label,permit2.bg,permit2.col,'ILL-9923','Z1 · Main St','7-Day Visitor','Oct 22, 2025',permit2.valCol]
+  ].forEach(function(x){
+    permHtml+='<div class="permit-card"><div class="permit-head"><div class="permit-icon" style="background:'+x[1]+'">'+x[0]+'</div><div><div class="permit-name">'+x[2]+'</div><div class="permit-meta">'+x[3]+'</div></div><div class="permit-status"><span class="status-tag" style="background:'+x[5]+';color:'+x[6]+'">'+x[4]+'</span></div></div>'
+      +'<div class="permit-body"><div class="pd"><div class="pd-l">Plate</div><div class="pd-v">'+x[7]+'</div></div><div class="pd"><div class="pd-l">Zone</div><div class="pd-v">'+x[8]+'</div></div><div class="pd"><div class="pd-l">Type</div><div class="pd-v">'+x[9]+'</div></div><div class="pd"><div class="pd-l">Valid Until</div><div class="pd-v" style="color:'+x[11]+'">'+x[10]+'</div></div></div></div>';
+  });
+  pages.appendChild(mkPage('c-permits',permHtml+'<div id="citizen-new-permits"></div>'));
+
+  // APPLY
+  var applyHtml=ph('Apply for Permit','');
+  applyHtml+='<div class="g3" style="margin-bottom:16px">';
+  [['🏠','Residential','Free · Annual — residents only','apply-res'],['🚗','Visitor Pass','Instant · 7-day max','apply-vis'],['🏢','Commercial','1–2 hrs · Business permit','apply-com']].forEach(function(x){
+    applyHtml+='<div class="card" id="'+x[3]+'" style="cursor:pointer;border:2px solid transparent;margin-bottom:0;transition:all 0.15s" onclick="selPermitType(this,\''+x[1]+'\',\''+x[0]+'\')"><div style="font-size:24px;margin-bottom:8px">'+x[0]+'</div><div style="font-size:13px;font-weight:700;margin-bottom:4px">'+x[1]+'</div><div style="font-size:12px;color:var(--txt2)">'+x[2]+'</div></div>';
+  });
+  applyHtml+='</div>'
+    +'<div class="card">'
+    +'<div style="font-size:14px;font-weight:700;margin-bottom:16px" id="apply-hdr">Select a permit type above to continue</div>'
+
+    +'<div style="font-size:10px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:0.08em;font-family:var(--mono);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--bdr)">Applicant Details</div>'
+    +'<div class="frow2"><div class="fgrp"><div class="flbl">Full Name</div><input class="finput" name="ap-name" value="Jane Doe"></div><div class="fgrp"><div class="flbl">Email Address</div><input class="finput" type="email" name="ap-email" value="jane.doe@email.com"></div></div>'
+    +'<div class="frow2"><div class="fgrp"><div class="flbl">Phone Number</div><input class="finput" type="tel" name="ap-phone" value="+1 (618) 555-0291"></div><div class="fgrp"><div class="flbl">License Plate</div><input class="finput" name="ap-plate" value="RVT-4829"></div></div>'
+
+    +'<div style="font-size:10px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:0.08em;font-family:var(--mono);margin:14px 0 10px;padding-top:14px;border-top:1px solid var(--bdr)">Parking Details</div>'
+    +'<div class="frow2"><div class="fgrp"><div class="flbl">Preferred Zone</div><select class="finput" name="zone-select"><option>Z2 — Elm Street</option><option>Z1 — Main Street</option><option>Z3 — University</option><option>Z4 — Downtown Core</option><option>Z5 — Riverside</option><option>Z6 — Medical Center</option><option>Z7 — Historic Dist.</option><option>Z8 — Commerce Park</option></select></div><div class="fgrp"><div class="flbl">Vehicle Type</div><select class="finput" name="ap-vehicle"><option>Car / Sedan</option><option>SUV / Truck</option><option>Motorcycle</option><option>Van / Commercial</option></select></div></div>'
+
+    +'<div style="font-size:10px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:0.08em;font-family:var(--mono);margin:14px 0 10px;padding-top:14px;border-top:1px solid var(--bdr)">Permit Duration</div>'
+    +'<div class="frow2"><div class="fgrp"><div class="flbl">Start Date</div><input class="finput" type="date" name="ap-start" id="ap-start"></div><div class="fgrp"><div class="flbl">End Date</div><input class="finput" type="date" name="ap-end" id="ap-end"></div></div>'
+    +'<div class="frow2"><div class="fgrp"><div class="flbl">Valid From (Time)</div><input class="finput" type="time" name="ap-time-from" value="07:00"></div><div class="fgrp"><div class="flbl">Valid Until (Time)</div><input class="finput" type="time" name="ap-time-to" value="22:00"></div></div>'
+    +'<div id="ap-duration-info" style="background:var(--bg3);border:1px solid var(--bdr2);border-radius:8px;padding:11px 14px;margin-bottom:14px;font-size:12px;color:var(--txt2);display:flex;align-items:center;gap:10px">'
+    +'<span style="font-size:15px">📅</span><span id="ap-duration-txt">Select start and end dates to see permit duration</span>'
+    +'</div>'
+
+    +'<div style="font-size:10px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:0.08em;font-family:var(--mono);margin:14px 0 10px;padding-top:14px;border-top:1px solid var(--bdr)">Reason / Notes</div>'
+    +'<div class="fgrp"><div class="flbl">Purpose of Permit</div><select class="finput" name="ap-reason"><option>Daily commuter parking</option><option>Resident — on-street parking</option><option>Visitor / Guest</option><option>Medical / Healthcare worker</option><option>Contractor / Construction</option><option>University staff or student</option><option>Other</option></select></div>'
+
+    +'<div style="display:flex;align-items:center;gap:12px;margin-top:6px">'
+    +'<button class="btn btn-primary" onclick="submitPermit()">Submit Application</button>'
+    +'<span style="font-size:12px;color:var(--txt3)">Estimated approval: under 2 hours</span>'
+    +'</div></div>'
+    ;
+  pages.appendChild(mkPage('c-apply',applyHtml));
+
+  // ── MY CITATIONS ──────────────────────────────────────────────────────────────
+  var citHtml = ph('My Citations','All citations issued against your vehicle — plate RVT-4829');
+
+  // Status filter bar
+  citHtml += '<div style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap" id="cit-filter-bar">'
+    +'<button class="cit-f active-cf" onclick="filterCitations(\'all\',this)" style="padding:6px 14px;border-radius:20px;border:1px solid var(--gold);background:rgba(212,175,55,.12);color:var(--gold3);font-size:11px;font-family:var(--mono);cursor:pointer;font-weight:700">All (3)</button>'
+    +'<button class="cit-f" onclick="filterCitations(\'unpaid\',this)" style="padding:6px 14px;border-radius:20px;border:1px solid var(--bdr2);background:none;color:var(--txt2);font-size:11px;font-family:var(--mono);cursor:pointer;font-weight:700">Unpaid (3)</button>'
+    +'<button class="cit-f" onclick="filterCitations(\'paid\',this)" style="padding:6px 14px;border-radius:20px;border:1px solid var(--bdr2);background:none;color:var(--txt2);font-size:11px;font-family:var(--mono);cursor:pointer;font-weight:700">Paid (0)</button>'
+    +'<button class="cit-f" onclick="filterCitations(\'appealed\',this)" style="padding:6px 14px;border-radius:20px;border:1px solid var(--bdr2);background:none;color:var(--txt2);font-size:11px;font-family:var(--mono);cursor:pointer;font-weight:700">Appealed (0)</button>'
+    +'<button class="btn btn-primary btn-sm" onclick="nav(\'c-pay\')" style="margin-left:auto">Pay Outstanding Fines</button>'
+    +'</div>';
+
+  // Summary strip
+  citHtml += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--bdr-g);border:1px solid var(--bdr-g);border-radius:13px;overflow:hidden;margin-bottom:18px">'
+    +'<div style="background:var(--bg2);padding:14px 16px"><div class="klbl">Total Citations</div><div class="kval" style="color:var(--gold3)">3</div></div>'
+    +'<div style="background:var(--bg2);padding:14px 16px"><div class="klbl">Total Fines</div><div class="kval" style="color:var(--red)">$155.00</div></div>'
+    +'<div style="background:var(--bg2);padding:14px 16px"><div class="klbl">Amount Paid</div><div class="kval" style="color:var(--green)">$0.00</div></div>'
+    +'<div style="background:var(--bg2);padding:14px 16px"><div class="klbl">Outstanding</div><div class="kval" style="color:var(--red)">$155.00</div></div>'
+    +'</div>';
+
+  // Citation detail cards
+  var citizenCitations = [
+    {
+      ref:'CIT-2025-88442', type:'No Permit', icon:'🚫',
+      zone:'Z4 — Downtown Core', spot:'Lot C, Row 3',
+      officer:'Officer O9', badge:'O9-2025',
+      issued:'Oct 12, 2025 · 10:34 AM', due:'Nov 12, 2025',
+      amt:75, plate:'RVT-4829',
+      status:'Unpaid',
+      statusBg:'rgba(239,68,68,.15)', statusCol:'#ef4444',
+      evidence:'No valid permit found for plate RVT-4829 in Zone Z4 at time of inspection.',
+      photo:'🚗'
+    },
+    {
+      ref:'CIT-2025-91003', type:'Expired Meter', icon:'⏱',
+      zone:'Z2 — Elm Street', spot:'Meter #224',
+      officer:'Officer O122', badge:'O122-2025',
+      issued:'Nov 4, 2025 · 2:17 PM', due:'Dec 4, 2025',
+      amt:50, plate:'RVT-4829',
+      status:'Unpaid',
+      statusBg:'rgba(239,68,68,.15)', statusCol:'#ef4444',
+      evidence:'Meter expired at 2:00 PM. Vehicle remained parked 17 minutes past meter expiry.',
+      photo:'⏱'
+    },
+    {
+      ref:'CIT-2025-94521', type:'Overtime Parking', icon:'⏰',
+      zone:'Z1 — Main Street', spot:'Space 07',
+      officer:'Officer O418', badge:'O418-2025',
+      issued:'Dec 14, 2025 · 9:02 AM', due:'Jan 13, 2026',
+      amt:30, plate:'RVT-4829',
+      status:'Unpaid',
+      statusBg:'rgba(239,68,68,.15)', statusCol:'#ef4444',
+      evidence:'Vehicle parked in 2-hour zone for 3 hours 12 minutes. Exceeded limit by 1 hr 12 min.',
+      photo:'🅿'
+    }
+  ];
+
+  citHtml += '<div id="cit-cards">';
+  citizenCitations.forEach(function(cit){
+    citHtml += '<div class="cit-card" data-status="'+cit.status.toLowerCase()+'" style="background:var(--bg2);border:1px solid var(--bdr-g);border-radius:14px;overflow:hidden;margin-bottom:14px">'
+
+      // Header row
+      +'<div style="display:flex;align-items:center;gap:13px;padding:16px 18px;border-bottom:1px solid var(--bdr)">'
+      +'<div style="width:44px;height:44px;border-radius:11px;background:rgba(239,68,68,.1);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">'+cit.icon+'</div>'
+      +'<div style="flex:1">'
+      +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">'
+      +'<span style="font-size:15px;font-weight:800;color:var(--txt)">'+cit.type+'</span>'
+      +'<span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;font-family:var(--mono);background:'+cit.statusBg+';color:'+cit.statusCol+'">'+cit.status.toUpperCase()+'</span>'
+      +'</div>'
+      +'<div style="font-size:11px;color:var(--txt3);font-family:var(--mono)">'+cit.ref+' &nbsp;·&nbsp; Issued '+cit.issued+'</div>'
+      +'</div>'
+      +'<div style="text-align:right;flex-shrink:0">'
+      +'<div style="font-size:24px;font-weight:800;color:'+cit.statusCol+'">$'+cit.amt+'.00</div>'
+      +'<div style="font-size:10px;font-family:var(--mono);color:var(--txt3);margin-top:2px">Due '+cit.due+'</div>'
+      +'</div>'
+      +'</div>'
+
+      // Detail grid
+      +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--bdr);border-bottom:1px solid var(--bdr)">'
+      +[['Zone',cit.zone],['Location',cit.spot],['Officer',cit.officer],['Plate',cit.plate]].map(function(x){
+        return '<div style="background:var(--bg3);padding:10px 14px"><div style="font-size:9px;font-family:var(--mono);color:var(--txt3);margin-bottom:3px;text-transform:uppercase;letter-spacing:.06em">'+x[0]+'</div><div style="font-size:12px;font-weight:600;color:var(--txt)">'+x[1]+'</div></div>';
+      }).join('')
+      +'</div>'
+
+      // Evidence / notes
+      +'<div style="padding:13px 18px;background:rgba(245,158,11,.04);border-bottom:1px solid var(--bdr)">'
+      +'<div style="font-size:10px;font-family:var(--mono);color:var(--gold);margin-bottom:5px;letter-spacing:.08em;text-transform:uppercase;opacity:.8">Officer Notes</div>'
+      +'<div style="font-size:13px;color:var(--txt2);line-height:1.6">'+cit.evidence+'</div>'
+      +'</div>'
+
+      // Action row
+      +'<div style="padding:13px 18px;display:flex;align-items:center;gap:9px;flex-wrap:wrap">'
+      +(cit.status==='Unpaid'?
+        '<button class="btn btn-success btn-sm" onclick="openPayConfirm([\''+cit.ref+'\'],'+cit.amt+')">Pay $'+cit.amt+'.00 Now</button>'
+        +'<button class="btn btn-ghost btn-sm" onclick="contestCitation(\''+cit.ref+'\')">Contest Citation</button>'
+        +'<span style="font-size:11px;color:var(--txt3);margin-left:4px">+$25 late fee after '+cit.due+'</span>'
+        :'<button class="btn btn-ghost btn-sm" onclick="openModal(\''+cit.ref+'\')">View Receipt</button>'
+      )
+      +'</div>'
+      +'</div>';
+  });
+  citHtml += '</div>'; // end cit-cards
+
+  // How to contest box
+  citHtml += '<div style="background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.15);border-radius:12px;padding:16px 18px;margin-top:4px">'
+    +'<div style="font-size:12px;font-weight:700;color:#60a5fa;margin-bottom:8px">How to Contest a Citation</div>'
+    +'<div style="font-size:12px;color:var(--txt2);line-height:1.7">'
+    +'1. Click <strong style="color:var(--txt)">Contest Citation</strong> on any citation above.<br>'
+    +'2. Your appeal is submitted to the Parking Office within 24 hours.<br>'
+    +'3. You will receive a decision via email within 5 business days.<br>'
+    +'4. If upheld, the fine is waived. If denied, the original fine remains due.'
+    +'</div>'
+    +'</div>';
+
+  pages.appendChild(mkPage('c-citations', citHtml));
+
+  // ── PAY ──────────────────────────────────────────────────────────────────────
+  var payHtml = ph('Payment Center','Manage fines, parking sessions, and payment methods');
+
+  // Outstanding fines summary strip
+  payHtml += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--bdr);border:1px solid var(--bdr);border-radius:12px;overflow:hidden;margin-bottom:18px">'
+    +'<div style="background:var(--bg2);padding:14px 16px"><div style="font-size:9px;font-family:var(--mono);color:var(--txt3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px">Outstanding Fines</div><div style="font-size:21px;font-weight:700;color:#ef4444">$155.00</div></div>'
+    +'<div style="background:var(--bg2);padding:14px 16px"><div style="font-size:9px;font-family:var(--mono);color:var(--txt3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px">Total Paid (2025)</div><div style="font-size:21px;font-weight:700;color:#10b981">$16.00</div></div>'
+    +'<div style="background:var(--bg2);padding:14px 16px"><div style="font-size:9px;font-family:var(--mono);color:var(--txt3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px">Open Fines</div><div style="font-size:21px;font-weight:700;color:#f59e0b">3</div></div>'
+    +'<div style="background:var(--bg2);padding:14px 16px"><div style="font-size:9px;font-family:var(--mono);color:var(--txt3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px">Due Soonest</div><div style="font-size:21px;font-weight:700;color:#ef4444">Apr 30</div></div>'
+    +'</div>';
+
+  payHtml += '<div class="g21">';
+
+  // Left: outstanding fines list
+  payHtml += '<div>'
+    +'<div class="card"><div class="card-hdr"><span class="card-title" style="border-left:2px solid #ef4444;padding-left:8px">Outstanding Fines</span>'
+    +'<button class="btn btn-primary btn-sm" onclick="payAllFines()" style="font-size:11px">Pay All ($155.00)</button></div>'
+    +'<div id="fines-list">'
+    + buildFineItemHTML('CIT-2025-88442','No Permit — Zone Z4','Oct 12, 2025','Nov 12, 2025','$75.00',75,'🚫','Unpaid')
+    + buildFineItemHTML('CIT-2025-91003','Expired Meter — Zone Z2','Nov 4, 2025','Dec 4, 2025','$50.00',50,'⏱','Unpaid')
+    + buildFineItemHTML('CIT-2025-94521','Overtime — Zone Z1','Dec 14, 2025','Jan 13, 2026','$30.00',30,'⏰','Unpaid')
+    +'</div>'
+    +'<div style="padding-top:12px;border-top:1px solid var(--bdr);margin-top:6px;display:flex;justify-content:space-between;align-items:center">'
+    +'<span style="font-size:12px;color:var(--txt3)">Select fines above then pay, or <button onclick="toast(\'All appeals submitted. Response within 5 business days.\')" style="background:none;border:none;color:var(--blue);font-size:12px;cursor:pointer;font-family:var(--font)">contest all</button></span>'
+    +'<button class="btn btn-primary" onclick="paySelectedFines()" style="background:var(--blue)">Pay Selected</button>'
+    +'</div></div>';
+
+  // Saved payment methods
+  payHtml += '<div class="card" style="margin-top:0"><div class="card-hdr"><span class="card-title" style="border-left:2px solid '+a+';padding-left:8px">Payment Methods</span></div>'
+    +'<div id="pay-methods">'
+    +'<div class="pay-method active-method" id="pm-1" onclick="selectMethod(\'pm-1\')" style="display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:8px;border:1.5px solid '+a+';background:'+a+'12;cursor:pointer;margin-bottom:7px">'
+    +'<div style="width:34px;height:22px;background:linear-gradient(135deg,#1a56db,#6366f1);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff">VISA</div>'
+    +'<div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--txt)">Visa ending 4829</div><div style="font-size:10px;color:var(--txt3)">Expires 09/27</div></div>'
+    +'<div style="font-size:10px;font-weight:700;color:'+a+';font-family:var(--mono)">DEFAULT</div></div>'
+    +'<div id="pm-2" onclick="selectMethod(\'pm-2\')" style="display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:8px;border:1.5px solid var(--bdr2);cursor:pointer;margin-bottom:7px">'
+    +'<div style="width:34px;height:22px;background:linear-gradient(135deg,#eb5757,#f97316);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff">MC</div>'
+    +'<div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--txt)">Mastercard ending 2290</div><div style="font-size:10px;color:var(--txt3)">Expires 03/28</div></div>'
+    +'</div>'
+    +'<button onclick="openAddCard()" style="display:flex;align-items:center;gap:7px;padding:9px 12px;border-radius:8px;border:1px dashed var(--bdr-g);background:none;color:var(--gold);cursor:pointer;font-size:12px;font-family:var(--font);width:100%;font-weight:600;transition:all .15s" onmouseover="this.style.background=\'rgba(212,175,55,.06)\'" onmouseout="this.style.background=\'none\'">+ Add new card</button>'
+    +'</div></div></div>';
+
+  // Right: payment history
+  payHtml += '<div class="card"><div class="card-hdr"><span class="card-title" style="border-left:2px solid '+a+';padding-left:8px">Payment History</span>'
+    +'<span style="font-size:10px;font-family:var(--mono);color:var(--txt3)">2025–2026</span></div>'
+    +'<div id="pay-history">'
+    +[
+      ['✅','rgba(16,185,129,0.12)','Parking session — Z2, Spot B-07','SP-2025-8820 · Visa ••4829','$4.00','Oct 18, 2025','paid','SP-2025-8820'],
+      ['✅','rgba(16,185,129,0.12)','Parking session — Z1, Spot C-12','SP-2025-8714 · Visa ••4829','$6.00','Oct 15, 2025','paid','SP-2025-8714'],
+      ['⚠','rgba(239,68,68,0.12)','Fine — No Permit Z4','CIT-2025-88442 · UNPAID','$75.00','Oct 12, 2025','unpaid','CIT-2025-88442'],
+      ['⚠','rgba(239,68,68,0.12)','Fine — Expired Meter Z2','CIT-2025-91003 · UNPAID','$50.00','Nov 4, 2025','unpaid','CIT-2025-91003'],
+      ['⚠','rgba(239,68,68,0.12)','Fine — Overtime Z1','CIT-2025-94521 · UNPAID','$30.00','Dec 14, 2025','unpaid','CIT-2025-94521'],
+      ['🅿','rgba(139,92,246,0.12)','Permit Application','RES-2025-00391 · Free','Free','Aug 1, 2025','paid','RES-2025-00391']
+    ].map(function(x){
+      return '<div class="act-item" id="hist-'+x[7]+'">'
+        +'<div class="act-icon" style="background:'+x[1]+'">'+x[0]+'</div>'
+        +'<div style="flex:1"><div class="act-title">'+x[2]+'</div><div class="act-sub">'+x[3]+'</div></div>'
+        +'<div class="act-amt">'
+        +'<div class="act-val" style="color:'+(x[6]==='paid'?'#10b981':'#ef4444')+'">'+x[4]+'</div>'
+        +'<div class="act-date">'+x[5]+'</div>'
+        +(x[6]==='paid'?'<button onclick="openModal(\''+x[7]+'\')" style="font-size:9px;background:none;border:1px solid var(--bdr2);color:var(--txt3);padding:2px 6px;border-radius:4px;cursor:pointer;margin-top:3px;font-family:var(--mono)">receipt</button>':'')
+        +'</div></div>';
+    }).join('')
+    +'</div></div>';
+
+  payHtml += '</div>'; // close g21
+
+  pages.appendChild(mkPage('c-pay',payHtml));
+
+  // ── RECEIPTS ──────────────────────────────────────────────────────────────────
+  var recHtml = ph('My Receipts','All parking and payment receipts · stored in your account');
+
+  // Filter bar
+  recHtml += '<div style="display:flex;gap:8px;margin-bottom:16px" id="rec-filters">'
+    +'<button class="rec-filter active-filter" onclick="filterReceipts(\'all\',this)" style="padding:6px 14px;border-radius:20px;border:1px solid var(--blue);background:rgba(59,130,246,0.12);color:var(--blue);font-size:11px;font-family:var(--mono);cursor:pointer">All</button>'
+    +'<button class="rec-filter" onclick="filterReceipts(\'parking\',this)" style="padding:6px 14px;border-radius:20px;border:1px solid var(--bdr2);background:none;color:var(--txt2);font-size:11px;font-family:var(--mono);cursor:pointer">Parking</button>'
+    +'<button class="rec-filter" onclick="filterReceipts(\'fines\',this)" style="padding:6px 14px;border-radius:20px;border:1px solid var(--bdr2);background:none;color:var(--txt2);font-size:11px;font-family:var(--mono);cursor:pointer">Fines Paid</button>'
+    +'<button class="rec-filter" onclick="filterReceipts(\'permits\',this)" style="padding:6px 14px;border-radius:20px;border:1px solid var(--bdr2);background:none;color:var(--txt2);font-size:11px;font-family:var(--mono);cursor:pointer">Permits</button>'
+    +'</div>';
+
+  recHtml += '<div id="receipts-container">';
+
+  // Static receipts (SP-2025-8820, SP-2025-8714)
+  var staticReceipts = [
+    {id:'SP-2025-8820',type:'parking',label:'Parking Session',grad:'linear-gradient(135deg,#4f46e5,#7c3aed)',amt:'$4.00',rows:[['Date & Time','Oct 18, 2025 · 9:00 – 11:00 AM'],['Location','Zone Z2 — Elm Street, Riverton'],['Spot Number','B-07'],['Duration','2 hours'],['Rate','$2.00/hr'],['License Plate','RVT-4829'],['Payment','Visa •••• 4829'],['Total Paid','$4.00']]},
+    {id:'SP-2025-8714',type:'parking',label:'Parking Session',grad:'linear-gradient(135deg,#0891b2,#059669)',amt:'$6.00',rows:[['Date & Time','Oct 15, 2025 · 10:30 AM – 1:30 PM'],['Location','Zone Z1 — Main Street, Riverton'],['Spot Number','C-12'],['Duration','3 hours'],['Rate','$2.00/hr'],['License Plate','RVT-4829'],['Payment','Visa •••• 4829'],['Total Paid','$6.00']]}
+  ];
+  staticReceipts.forEach(function(r){
+    recHtml += buildReceiptHTML(r,a);
+  });
+
+  // Dynamic paid receipts container
+  recHtml += '<div id="dynamic-receipts"></div>';
+  recHtml += '</div>';
+
+  pages.appendChild(mkPage('c-receipts',recHtml));
+
+  // ── ACCOUNT ───────────────────────────────────────────────────────────────────
+  var acctHtml = ph('My Account','Profile, preferences, and activity history');
+  acctHtml += '<div class="g21">';
+
+  // Left: activity + stats
+  acctHtml += '<div>'
+    +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">'
+    +'<div style="background:var(--bg2);border:1px solid var(--bdr);border-radius:10px;padding:13px;text-align:center"><div style="font-size:20px;font-weight:700;color:'+a+'">6</div><div style="font-size:10px;font-family:var(--mono);color:var(--txt3);margin-top:2px">Parking sessions</div></div>'
+    +'<div style="background:var(--bg2);border:1px solid var(--bdr);border-radius:10px;padding:13px;text-align:center"><div style="font-size:20px;font-weight:700;color:#10b981">$10</div><div style="font-size:10px;font-family:var(--mono);color:var(--txt3);margin-top:2px">Total paid</div></div>'
+    +'<div style="background:var(--bg2);border:1px solid var(--bdr);border-radius:10px;padding:13px;text-align:center"><div style="font-size:20px;font-weight:700;color:#ef4444">3</div><div style="font-size:10px;font-family:var(--mono);color:var(--txt3);margin-top:2px">Open fines</div></div>'
+    +'</div>'
+    +'<div class="card"><div class="card-hdr"><span class="card-title" style="border-left:2px solid '+a+';padding-left:8px">Recent Activity</span></div>'
+    +'<div id="acct-activity">'
+    +[
+      ['🅿','rgba(139,92,246,0.12)','Parking — Z2, Spot B-07','SP-2025-8820 · Receipt emailed & saved','$4.00','Oct 18, 2025'],
+      ['🅿','rgba(139,92,246,0.12)','Parking — Z1, Spot C-12','SP-2025-8714 · Receipt saved to account','$6.00','Oct 15, 2025'],
+      ['📋','rgba(59,130,246,0.12)','Permit Issued — Residential Z2','RES-2025-00391 · Expired Dec 31, 2025','Free','Aug 1, 2025'],
+      ['⚠','rgba(239,68,68,0.12)','Citation — No Permit, Zone Z4','CIT-2025-88442 · Outstanding $75','$75.00','Oct 12, 2025'],
+      ['⚠','rgba(239,68,68,0.12)','Citation — Expired Meter, Zone Z2','CIT-2025-91003 · Outstanding $50','$50.00','Nov 4, 2025']
+    ].map(function(x){
+      return '<div class="act-item"><div class="act-icon" style="background:'+x[1]+'">'+x[0]+'</div>'
+        +'<div style="flex:1"><div class="act-title">'+x[2]+'</div><div class="act-sub">'+x[3]+'</div></div>'
+        +'<div class="act-amt"><div class="act-val" style="color:'+(x[0]==='⚠'?'#ef4444':x[0]==='✅'?'#10b981':'var(--txt)')+'">'+x[4]+'</div>'
+        +'<div class="act-date">'+x[5]+'</div></div></div>';
+    }).join('')+'</div></div>'
+    +'<div id="acct-new-activity"></div>'
+    +'</div>';
+
+  // Right: profile + preferences
+  acctHtml += '<div>'
+    +'<div class="card" style="text-align:center;padding:22px 18px">'
+    +'<div style="width:54px;height:54px;border-radius:50%;background:#4c1d95;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;margin:0 auto 10px">JD</div>'
+    +'<div style="font-size:16px;font-weight:700">Jane Doe</div>'
+    +'<div style="font-size:12px;color:var(--txt2);margin-bottom:6px">jane.doe@email.com</div>'
+    +'<span style="font-size:10px;font-family:var(--mono);padding:3px 9px;border-radius:20px;background:rgba(139,92,246,0.12);color:#8b5cf6">Member since Mar 2024</span>'
+    +'<div style="margin-top:16px;display:flex;flex-direction:column;gap:0;text-align:left">'
+    +[['📞','Phone','+1 (618) 555-0291'],['🚗','Primary Plate','RVT-4829'],['🏠','Home Zone','Z2 — Elm Street'],['🏦','Default Card','Visa •••• 4829']].map(function(x){
+      return '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--bdr);font-size:12px"><span>'+x[0]+'</span><span style="color:var(--txt2);flex:1">'+x[1]+'</span><span style="font-weight:600;color:var(--txt)">'+x[2]+'</span></div>';
+    }).join('')+'</div>'
+    +'<button onclick="toast(\'Profile editor coming soon.\')" class="btn btn-ghost btn-sm" style="margin-top:14px;width:100%">Edit Profile</button>'
+    +'</div>'
+    +'<div class="card"><div class="card-hdr"><span class="card-title" style="border-left:2px solid '+a+';padding-left:8px">Notification & Receipt Preferences</span></div>'
+    +[
+      ['📧','Email receipts','Sent to jane.doe@email.com',true],
+      ['📱','SMS receipts','Sent to +1 (618) 555-0291',true],
+      ['🗂','Save to account','All receipts stored permanently',true],
+      ['🔔','Fine reminders','7 days before due date',true],
+      ['⏰','Permit expiry alerts','30 days before expiry',false],
+      ['🅿','Parking spot availability','Notify when Z2 drops below 5 spots',false]
+    ].map(function(x){
+      return '<label style="display:flex;align-items:center;gap:9px;cursor:pointer;padding:9px 8px;border-radius:7px;border:1px solid var(--bdr);margin-bottom:5px;background:var(--bg3);transition:background 0.12s" onmouseover="this.style.background=\'var(--bg4)\'" onmouseout="this.style.background=\'var(--bg3)\'">'
+        +'<input type="checkbox" '+(x[3]?'checked':'')+' style="accent-color:'+a+';width:14px;height:14px">'
+        +'<div style="flex:1"><div style="font-size:12px;font-weight:600">'+x[0]+' '+x[1]+'</div><div style="font-size:10px;color:var(--txt3)">'+x[2]+'</div></div>'
+        +'</label>';
+    }).join('')+'</div>'
+    +'</div>';
+
+  acctHtml += '</div>'; // close g21
+  pages.appendChild(mkPage('c-account',acctHtml));
+
+  nav('c-find');
+  setTimeout(function(){
+    buildZoneTiles('cit-zone-grid',true);
+    buildResZoneList();
+    var d=new Date().toISOString().split('T')[0];
+    var rd=qs('r-date'); if(rd) rd.value=d;
+  },50);
+}
+
+// ─── CITIZEN INTERACTIONS ────────────────────────────────────────────────────
+function doSearch(){
+  var v=(qs('dest-in')||{}).value||'';
+  if(!v.trim()){toast('Enter a destination first',false);return;}
+  toast('Searching near "'+v+'"…');
+  setTimeout(function(){var z=ZONES.find(function(x){return x.st!=='full';});if(z)selectZone(z);},1200);
+}
+function doGPS(){toast('Nearest available: Zone Z2, Elm Street — 12 spots free');}
+function goToReserve(){
+  buildResZoneList(); nav('c-reserve'); goWS(1);
+  document.querySelectorAll('.nav-item').forEach(function(b){b.classList.remove('active');b.style.background='';b.style.color='';});
+  document.querySelectorAll('.nav-item').forEach(function(b){if(b.dataset.page==='c-reserve'){b.classList.add('active');b.style.background=acc()+'22';b.style.color=acc();}});
+}
+function buildResZoneList(){
+  var el=qs('res-zones'); if(!el) return; el.innerHTML='';
+  ZONES.filter(function(z){return z.st!=='full';}).forEach(function(z){
+    var col=z.st==='open'?'#10b981':'#f59e0b';
+    var d=document.createElement('div');
+    d.style.cssText='display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;border:1px solid var(--bdr2);cursor:pointer;transition:all 0.12s;margin-bottom:5px;';
+    d.innerHTML='<div style="width:9px;height:9px;border-radius:50%;background:'+col+';flex-shrink:0"></div><div style="flex:1"><div style="font-size:13px;font-weight:600">'+z.id+' — '+z.name+'</div><div style="font-size:10px;color:var(--txt3);font-family:var(--mono)">'+z.free+' spots · $'+z.rate.toFixed(2)+'/hr</div></div>';
+    (function(zone){d.onclick=function(){
+      selZone=zone;
+      el.querySelectorAll('div').forEach(function(x){x.style.borderColor='var(--bdr2)';x.style.background='';});
+      d.style.borderColor=acc(); d.style.background=acc()+'15';
+    };})(z);
+    if(selZone&&selZone.id===z.id){d.style.borderColor=acc();d.style.background=acc()+'15';}
+    el.appendChild(d);
+  });
+}
+// ─── SHARED PERMIT QUEUE (live across all roles) ──────────────────────────────
+var permitQueue = [];   // pending applications
+var approvedPermits = []; // approved by admin, shown in citizen My Permits
+
+function selPermitType(el,name,icon){
+  document.querySelectorAll('#apply-res,#apply-vis,#apply-com').forEach(function(c){c.style.borderColor='transparent';c.style.background='';});
+  el.style.borderColor=acc(); el.style.background=acc()+'15';
+  qs('apply-hdr').textContent=icon+' '+name+' Application';
+  el.dataset.selectedType = name;
+  el.dataset.selectedIcon = icon;
+}
+
+function getSelectedPermitType(){
+  var el = document.querySelector('#apply-res[data-selected-type],#apply-vis[data-selected-type],#apply-com[data-selected-type]');
+  return el ? {type: el.dataset.selectedType, icon: el.dataset.selectedIcon} : null;
+}
+
+function submitPermit(){
+  var hdr = qs('apply-hdr');
+  if(!hdr || hdr.textContent.indexOf('Select') === 0){
+    toast('Please select a permit type first', false);
+    return;
+  }
+
+  // Parse type name and icon from the heading text e.g. "🏠 Residential Application"
+  var hdrtxt = hdr.textContent.trim();
+  var iconMatch = hdrtxt.match(/^(\S+)\s(.+?)\s+Application$/);
+  var icon = iconMatch ? iconMatch[1] : '📋';
+  var typeName = iconMatch ? iconMatch[2] : hdrtxt.replace(' Application','');
+
+  var zoneEl = document.querySelector('select[name="zone-select"]');
+  var zoneTxt = zoneEl ? zoneEl.value : 'Z2 — Elm Street';
+  var zoneId = zoneTxt.split(' ')[0];
+
+  var startEl = qs('ap-start'), endEl = qs('ap-end');
+  var timeFromEl = document.querySelector('input[name="ap-time-from"]');
+  var timeToEl   = document.querySelector('input[name="ap-time-to"]');
+  var startVal = startEl ? startEl.value : '';
+  var endVal   = endEl   ? endEl.value   : '';
+  var timeFrom = timeFromEl ? timeFromEl.value : '07:00';
+  var timeTo   = timeToEl   ? timeToEl.value   : '22:00';
+
+  if(!startVal || !endVal){
+    toast('Please select a start and end date', false);
+    return;
+  }
+  var startDate = new Date(startVal), endDate = new Date(endVal);
+  if(endDate <= startDate){ toast('End date must be after start date', false); return; }
+  var days = Math.round((endDate - startDate)/(1000*60*60*24));
+  var startFmt = startDate.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  var endFmt   = endDate.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+
+  var reasonEl = document.querySelector('select[name="ap-reason"]');
+  var reason = reasonEl ? reasonEl.value : '';
+
+  var ref = 'APP-' + Date.now().toString().slice(-6);
+  var now = new Date();
+  var submittedAt = now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+
+  var app = {
+    ref: ref,
+    icon: icon,
+    type: typeName,
+    applicant: 'Jane Doe',
+    plate: 'RVT-4829',
+    email: 'jane.doe@email.com',
+    zone: zoneId,
+    zoneFull: zoneTxt,
+    submitted: submittedAt,
+    startDate: startFmt,
+    endDate: endFmt,
+    endISO: endVal,
+    timeFrom: timeFrom,
+    timeTo: timeTo,
+    days: days,
+    reason: reason,
+    status: 'pending'
+  };
+  permitQueue.push(app);
+  updatePermitBadge();
+  toast('Application ' + ref + ' submitted! You will be notified once approved.');
+  setTimeout(function(){
+    nav('c-permits');
+    refreshCitizenPermits();
+  }, 1800);
+}
+
+function updatePermitBadge(){
+  var pending = permitQueue.filter(function(p){return p.status==='pending';}).length;
+  document.querySelectorAll('.nav-item').forEach(function(b){
+    if(b.dataset.page==='a-permits'){
+      var bdg = b.querySelector('.nav-bdg');
+      if(bdg) bdg.textContent = (847 + pending);
+      else if(pending > 0){
+        var s = document.createElement('span');
+        s.className='nav-bdg'; s.style.cssText='margin-left:auto;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;font-family:var(--mono);background:rgba(245,158,11,0.18);color:#f59e0b;';
+        s.textContent = 847 + pending;
+        b.appendChild(s);
+      }
+    }
+  });
+}
+
+function approvePermit(ref){
+  var app = permitQueue.find(function(p){return p.ref===ref;});
+  if(!app) return;
+  app.status = 'approved';
+  // Use the applicant's requested end date if available, else default to 1 year
+  if(app.endISO){
+    app.expiry = app.endDate;
+    app.expiryISO = app.endISO;
+  } else {
+    var expiry = new Date();
+    expiry.setFullYear(expiry.getFullYear()+1);
+    app.expiry = expiry.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    app.expiryISO = expiry.toISOString().split('T')[0];
+  }
+  approvedPermits.push(app);
+  toast(app.ref+' approved — Jane Doe notified via email & SMS.');
+  updatePermitBadge();
+  refreshAdminPermitQueue();
+}
+
+function rejectPermit(ref){
+  var app = permitQueue.find(function(p){return p.ref===ref;});
+  if(!app) return;
+  app.status = 'rejected';
+  toast(app.ref + ' rejected — applicant notified.', false);
+  updatePermitBadge();
+  refreshAdminPermitQueue();
+}
+
+function refreshAdminPermitQueue(){
+  var container = qs('permit-queue');
+  if(!container) return;
+  var pending = permitQueue.filter(function(p){return p.status==='pending';});
+  // Update KPI card count
+  var kpiEl = qs('kpi-pending');
+  if(kpiEl) kpiEl.textContent = (847 + pending.length);
+  if(pending.length === 0){
+    container.innerHTML='<div style="text-align:center;padding:24px;color:var(--txt3);font-size:13px">No pending applications — queue is clear ✓</div>';
+    return;
+  }
+  container.innerHTML = pending.map(function(app){
+    return '<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--bdr)">'
+      +'<div style="width:36px;height:36px;border-radius:8px;background:rgba(245,158,11,0.12);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">'+app.icon+'</div>'
+      +'<div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--txt)">'+app.type+' Permit — Zone '+app.zone+'</div>'
+      +'<div style="font-size:10px;color:var(--txt3);font-family:var(--mono);margin-top:2px">'
+        +app.ref+' &nbsp;·&nbsp; '+app.applicant+' &nbsp;·&nbsp; '+app.plate+' &nbsp;·&nbsp; '+app.email+' &nbsp;·&nbsp; Submitted '+app.submitted
+        +(app.startDate ? ' &nbsp;·&nbsp; <span style="color:#f59e0b">'+app.startDate+' → '+app.endDate+' ('+app.days+' days) · '+app.timeFrom+'–'+app.timeTo+'</span>' : '')
+      +'</div></div>'
+      +'<div style="display:flex;gap:7px">'
+      +'<button class="btn btn-success btn-sm" onclick="approvePermit(\''+app.ref+'\')">✓ Approve</button>'
+      +'<button class="btn btn-ghost btn-sm" style="color:#ef4444;border-color:rgba(239,68,68,0.3)" onclick="rejectPermit(\''+app.ref+'\')">✕ Reject</button>'
+      +'</div></div>';
+  }).join('');
+}
+
+function refreshCitizenPermits(){
+  var container = qs('citizen-new-permits');
+  if(!container) return;
+  var pending = permitQueue.filter(function(p){return p.status==='pending';});
+  var approved = permitQueue.filter(function(p){return p.status==='approved';});
+  var html = '';
+  pending.forEach(function(app){
+    html += '<div class="permit-card">'
+      +'<div class="permit-head"><div class="permit-icon" style="background:rgba(245,158,11,0.12)">'+app.icon+'</div>'
+      +'<div><div class="permit-name">'+app.type+' — Zone '+app.zone+'</div><div class="permit-meta">'+app.ref+' · Submitted '+app.submitted+'</div></div>'
+      +'<div class="permit-status"><span class="status-tag" style="background:rgba(245,158,11,0.15);color:#f59e0b">PENDING APPROVAL</span></div></div></div>';
+  });
+  approved.forEach(function(app){
+    var timeRange = app.timeFrom && app.timeTo ? app.timeFrom+' – '+app.timeTo : '24 hrs';
+    html += '<div class="permit-card">'
+      +'<div class="permit-head"><div class="permit-icon" style="background:rgba(16,185,129,0.12)">'+app.icon+'</div>'
+      +'<div><div class="permit-name">'+app.type+' — Zone '+app.zone+'</div><div class="permit-meta">'+app.ref+' · Approved · Valid hours: '+timeRange+'</div></div>'
+      +'<div class="permit-status"><span class="status-tag" style="background:rgba(16,185,129,0.15);color:#10b981">ACTIVE</span></div></div>'
+      +'<div class="permit-body">'
+      +'<div class="pd"><div class="pd-l">Plate</div><div class="pd-v">'+app.plate+'</div></div>'
+      +'<div class="pd"><div class="pd-l">Zone</div><div class="pd-v">'+app.zone+'</div></div>'
+      +'<div class="pd"><div class="pd-l">Start Date</div><div class="pd-v">'+app.startDate+'</div></div>'
+      +'<div class="pd"><div class="pd-l">Valid Until</div><div class="pd-v" style="color:#10b981">'+app.expiry+'</div></div>'
+      +'</div></div>';
+  });
+  container.innerHTML = html;
+}
+
+// ─── PAYMENT HELPERS ──────────────────────────────────────────────────────────
+var paidFines = {};   // ref → true when paid
+var selectedFines = {};  // ref → amount when checkbox ticked
+var selectedPayMethod = 'Visa •••• 4829';
+var dynamicReceipts = [];
+
+function buildFineItemHTML(ref,desc,issued,due,amt,amtNum,icon,status){
+  var isPaid = paidFines[ref];
+  var bg = isPaid ? 'rgba(16,185,129,0.06)' : 'rgba(239,68,68,0.06)';
+  var borderCol = isPaid ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)';
+  var statusColor = isPaid ? '#10b981' : '#ef4444';
+  var statusLabel = isPaid ? 'PAID' : status;
+  return '<div id="fine-'+ref+'" style="display:flex;align-items:center;gap:11px;padding:12px 14px;border-radius:9px;border:1px solid '+borderCol+';background:'+bg+';margin-bottom:8px">'
+    +(isPaid ? '' : '<input type="checkbox" id="chk-'+ref+'" onchange="toggleFineSelect(\''+ref+'\','+amtNum+')" style="width:15px;height:15px;accent-color:var(--blue);flex-shrink:0">')
+    +'<div style="width:34px;height:34px;border-radius:8px;background:'+(isPaid?'rgba(16,185,129,0.12)':'rgba(239,68,68,0.12)')+';display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">'+icon+'</div>'
+    +'<div style="flex:1">'
+    +'<div style="font-size:13px;font-weight:600;color:var(--txt)">'+desc+'</div>'
+    +'<div style="font-size:10px;color:var(--txt3);font-family:var(--mono);margin-top:2px">'+ref+' · Issued '+issued+' · Due '+due+'</div>'
+    +'</div>'
+    +'<div style="text-align:right">'
+    +'<div style="font-size:16px;font-weight:700;color:'+statusColor+'">'+amt+'</div>'
+    +'<div style="font-size:9px;font-family:var(--mono);color:'+statusColor+';margin-top:2px">'+statusLabel+'</div>'
+    +(isPaid ? '<button onclick="openModal(\''+ref+'\')" style="margin-top:4px;font-size:9px;background:none;border:1px solid rgba(16,185,129,0.3);color:#10b981;padding:2px 7px;border-radius:4px;cursor:pointer;font-family:var(--mono)">receipt</button>' : '')
+    +'</div>'
+    +'</div>';
+}
+
+function buildReceiptHTML(r,accent){
+  var html = '<div class="receipt" data-type="'+r.type+'" style="margin-bottom:14px">'
+    +'<div class="rhead" style="background:'+r.grad+'">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start">'
+    +'<div><div style="font-size:10px;font-weight:700;opacity:0.8;letter-spacing:0.08em;text-transform:uppercase">'+r.label+'</div>'
+    +'<div style="font-family:var(--mono);font-size:10px;opacity:0.6;margin-top:3px">#'+r.id+'</div></div>'
+    +'<div style="font-size:24px;font-weight:700">'+r.amt+'</div>'
+    +'</div></div>'
+    +'<div class="rbody">';
+  r.rows.forEach(function(row){
+    var isTotal = row[0]==='Total Paid' || row[0]==='Amount Paid';
+    html += '<div class="rrow"><span class="rl">'+row[0]+'</span>'
+      +'<span class="rv" style="'+(isTotal?'color:#10b981;font-size:15px;font-weight:700':'')+'">'+row[1]+'</span></div>';
+  });
+  html += '</div><div class="rfoot"><span style="font-size:11px;color:var(--txt3);font-family:var(--mono)">Payment confirmed · SmartPark Riverton</span>'
+    +'<button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="openModal(\''+r.id+'\')">📧 Send Receipt</button>'
+    +'</div></div>';
+  return html;
+}
+
+function toggleFineSelect(ref, amt){
+  var chk = qs('chk-'+ref);
+  if(chk && chk.checked) selectedFines[ref]=amt;
+  else delete selectedFines[ref];
+}
+
+var selectedMethodId = 'pm-1';
+function selectMethod(id){
+  selectedMethodId = id;
+  ['pm-1','pm-2'].forEach(function(mid){
+    var el=qs(mid); if(!el) return;
+    var isActive = mid===id;
+    var a=acc();
+    el.style.borderColor = isActive ? a : 'var(--bdr2)';
+    el.style.background  = isActive ? a+'12' : 'transparent';
+  });
+  selectedPayMethod = id==='pm-1' ? 'Visa •••• 4829' : 'Mastercard •••• 2290';
+}
+
+function getSelectedTotal(){
+  var total=0;
+  Object.keys(selectedFines).forEach(function(k){ total+=selectedFines[k]; });
+  return total;
+}
+
+function paySelectedFines(){
+  var refs = Object.keys(selectedFines);
+  if(refs.length===0){ toast('Select at least one fine to pay', false); return; }
+  var total = getSelectedTotal();
+  openPayConfirm(refs, total);
+}
+
+function payAllFines(){
+  var all = ['CIT-2025-88442','CIT-2025-91003','CIT-2025-94521'];
+  var unpaid = all.filter(function(r){ return !paidFines[r]; });
+  if(unpaid.length===0){ toast('All fines already paid!'); return; }
+  openPayConfirm(unpaid, 155);
+}
+
+function payFine(){ openPayConfirm(['CIT-2025-88442'], 75); }
+
+// ─── PAYMENT CONFIRM MODAL ────────────────────────────────────────────────────
+var pendingPayRefs = [];
+var pendingPayTotal = 0;
+
+function openPayConfirm(refs, total){
+  pendingPayRefs = refs;
+  pendingPayTotal = total;
+  var el = qs('pay-confirm-modal');
+  if(!el){ buildPayConfirmModal(); el = qs('pay-confirm-modal'); }
+  qs('pcm-total').textContent = '$'+total+'.00';
+  qs('pcm-method').textContent = selectedPayMethod;
+  qs('pcm-count').textContent = refs.length + ' fine'+(refs.length>1?'s':'');
+  qs('pcm-refs').textContent = refs.join(', ');
+  qs('pay-confirm-overlay').classList.add('open');
+}
+
+function buildPayConfirmModal(){
+  var a = acc();
+  var overlay = document.createElement('div');
+  overlay.id = 'pay-confirm-overlay';
+  overlay.className = 'overlay';
+  overlay.style.zIndex = '600';
+  overlay.innerHTML =
+    '<div class="modal" id="pay-confirm-modal">'
+    +'<div id="pcm-step-1">'
+    +'<div style="font-size:17px;font-weight:700;color:var(--txt);margin-bottom:4px">Confirm Payment</div>'
+    +'<div style="font-size:13px;color:var(--txt2);margin-bottom:18px">Review your payment before confirming</div>'
+    +'<div style="background:var(--bg3);border:1px solid var(--bdr2);border-radius:10px;padding:16px;margin-bottom:14px">'
+    +'<div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:13px"><span style="color:var(--txt2)">Fines</span><span id="pcm-count" style="font-weight:600;color:var(--txt)">—</span></div>'
+    +'<div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:13px"><span style="color:var(--txt2)">References</span><span id="pcm-refs" style="font-weight:600;color:var(--txt);font-family:var(--mono);font-size:11px">—</span></div>'
+    +'<div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:13px"><span style="color:var(--txt2)">Payment Method</span><span id="pcm-method" style="font-weight:600;color:var(--txt)">—</span></div>'
+    +'<div style="display:flex;justify-content:space-between;padding-top:10px;border-top:1px solid var(--bdr);font-size:16px;font-weight:700"><span>Total</span><span id="pcm-total" style="color:'+a+'">—</span></div>'
+    +'</div>'
+    +'<div style="display:flex;gap:8px">'
+    +'<button class="btn btn-success" onclick="executePayment()" style="flex:1">✓ Confirm Payment</button>'
+    +'<button class="btn btn-ghost" onclick="qs(\'pay-confirm-overlay\').classList.remove(\'open\')">Cancel</button>'
+    +'</div></div>'
+    +'<div id="pcm-step-2" style="display:none;text-align:center;padding:10px 0">'
+    +'<div id="pcm-spinner" style="font-size:36px;margin-bottom:12px;animation:spin 0.8s linear infinite">⚙</div>'
+    +'<div style="font-size:14px;font-weight:600;color:var(--txt2)">Processing payment…</div>'
+    +'</div>'
+    +'<div id="pcm-step-3" style="display:none;text-align:center;padding:10px 0">'
+    +'<div style="font-size:48px;margin-bottom:12px">✅</div>'
+    +'<div style="font-size:18px;font-weight:700;color:#10b981;margin-bottom:6px">Payment Successful!</div>'
+    +'<div style="font-size:13px;color:var(--txt2);margin-bottom:18px" id="pcm-success-msg">—</div>'
+    +'<div style="display:flex;gap:8px;justify-content:center">'
+    +'<button class="btn btn-primary btn-sm" onclick="afterPayReceipt()" style="background:'+a+'">📧 Send Receipt</button>'
+    +'<button class="btn btn-ghost btn-sm" onclick="closePayConfirm()">Done</button>'
+    +'</div></div>'
+    +'</div>';
+  document.body.appendChild(overlay);
+}
+
+function executePayment(){
+  qs('pcm-step-1').style.display='none';
+  qs('pcm-step-2').style.display='block';
+  setTimeout(function(){
+    // Mark fines as paid
+    pendingPayRefs.forEach(function(ref){ paidFines[ref]=true; });
+
+    // Add to dynamic receipts
+    var now = new Date();
+    var dateStr = now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    var rec = {
+      id:'PAY-'+Date.now().toString().slice(-6),
+      type:'fines',
+      label:'Fine Payment',
+      grad:'linear-gradient(135deg,#065f46,#10b981)',
+      amt:'$'+pendingPayTotal+'.00',
+      rows:[
+        ['Date & Time',dateStr],
+        ['Fines Paid',pendingPayRefs.join(', ')],
+        ['Payment Method',selectedPayMethod],
+        ['Processed by','SmartPark Riverton'],
+        ['Amount Paid','$'+pendingPayTotal+'.00']
+      ]
+    };
+    dynamicReceipts.push(rec);
+
+    // Update UI
+    qs('pcm-step-2').style.display='none';
+    qs('pcm-step-3').style.display='block';
+    qs('pcm-success-msg').textContent = '$'+pendingPayTotal+'.00 charged to '+selectedPayMethod+'. Receipt ready.';
+
+    // Refresh fines list
+    var fl = qs('fines-list');
+    if(fl){
+      var fineData = [
+        ['CIT-2025-88442','No Permit — Zone Z4','Oct 12, 2025','Nov 12, 2025','$75.00',75,'🚫','Unpaid'],
+        ['CIT-2025-91003','Expired Meter — Zone Z2','Nov 4, 2025','Dec 4, 2025','$50.00',50,'⏱','Unpaid'],
+        ['CIT-2025-94521','Overtime — Zone Z1','Dec 14, 2025','Jan 13, 2026','$30.00',30,'⏰','Unpaid']
+      ];
+      fl.innerHTML = fineData.map(function(d){
+        return buildFineItemHTML(d[0],d[1],d[2],d[3],d[4],d[5],d[6],d[7]);
+      }).join('');
+    }
+
+    // Refresh history row colors
+    pendingPayRefs.forEach(function(ref){
+      var row = qs('hist-'+ref);
+      if(row){
+        var val = row.querySelector('.act-val');
+        if(val) val.style.color='#10b981';
+        var sub = row.querySelector('.act-sub');
+        if(sub) sub.textContent = sub.textContent.replace('UNPAID','PAID · '+selectedPayMethod);
+      }
+    });
+
+    // Refresh dynamic receipts list
+    var dr = qs('dynamic-receipts');
+    if(dr) dr.innerHTML = dynamicReceipts.map(function(r){ return buildReceiptHTML(r,acc()); }).join('');
+
+    // Update account activity
+    var aa = qs('acct-new-activity');
+    if(aa){
+      aa.innerHTML += '<div class="act-item"><div class="act-icon" style="background:rgba(16,185,129,0.12)">✅</div>'
+        +'<div style="flex:1"><div class="act-title">Fine payment — '+pendingPayRefs.length+' citation'+(pendingPayRefs.length>1?'s':'')+' cleared</div>'
+        +'<div class="act-sub">'+rec.id+' · '+selectedPayMethod+'</div></div>'
+        +'<div class="act-amt"><div class="act-val" style="color:#10b981">$'+pendingPayTotal+'.00</div><div class="act-date">Just now</div></div></div>';
+    }
+
+    selectedFines = {};
+  }, 1600);
+}
+
+function afterPayReceipt(){
+  closePayConfirm();
+  if(dynamicReceipts.length>0){
+    openModal(dynamicReceipts[dynamicReceipts.length-1].id);
+  }
+}
+
+function closePayConfirm(){
+  var ov=qs('pay-confirm-overlay');
+  if(ov) ov.classList.remove('open');
+  setTimeout(function(){
+    var s1=qs('pcm-step-1'),s2=qs('pcm-step-2'),s3=qs('pcm-step-3');
+    if(s1){s1.style.display='';} if(s2){s2.style.display='none';} if(s3){s3.style.display='none';}
+  },300);
+}
+
+// ─── ADD CARD ─────────────────────────────────────────────────────────────────
+var savedCards = [
+  {id:'pm-1', label:'Visa',       number:'4829', expiry:'09/27', gradient:'linear-gradient(135deg,#1a56db,#6366f1)', isDefault:true},
+  {id:'pm-2', label:'Mastercard', number:'2290', expiry:'03/28', gradient:'linear-gradient(135deg,#eb5757,#f97316)', isDefault:false}
+];
+
+function openAddCard(){
+  // Reset form
+  ['ac-name','ac-number','ac-expiry','ac-cvv','ac-zip'].forEach(function(id){
+    var e=qs(id); if(e) e.value='';
+  });
+  var dc=qs('ac-default'); if(dc) dc.checked=false;
+  resetCardPreview();
+  qs('add-card-overlay').classList.add('open');
+}
+
+function closeAddCard(){
+  qs('add-card-overlay').classList.remove('open');
+}
+
+function resetCardPreview(){
+  var n=qs('ac-card-number-display'); if(n) n.textContent='•••• •••• •••• ••••';
+  var nm=qs('ac-name-display'); if(nm) nm.textContent='FULL NAME';
+  var ex=qs('ac-exp-display'); if(ex) ex.textContent='MM/YY';
+  var nl=qs('ac-network-logo'); if(nl) nl.textContent='——';
+  var pr=qs('ac-preview'); if(pr) pr.style.background='linear-gradient(135deg,#1c3860,#0c2a50)';
+}
+
+function formatCardNumber(input){
+  var v = input.value.replace(/\D/g,'').slice(0,16);
+  input.value = v.match(/.{1,4}/g) ? v.match(/.{1,4}/g).join(' ') : v;
+  updateCardPreview();
+}
+
+function formatExpiry(input){
+  var v = input.value.replace(/\D/g,'').slice(0,4);
+  if(v.length>=2) v = v.slice(0,2)+'/'+v.slice(2);
+  input.value = v;
+  updateCardPreview();
+}
+
+function detectNetwork(num){
+  var n = num.replace(/\s/g,'');
+  if(/^4/.test(n)) return {label:'VISA', gradient:'linear-gradient(135deg,#1a56db,#6366f1)'};
+  if(/^5[1-5]/.test(n)) return {label:'MC', gradient:'linear-gradient(135deg,#eb5757,#f97316)'};
+  if(/^3[47]/.test(n)) return {label:'AMEX', gradient:'linear-gradient(135deg,#059669,#0d9488)'};
+  if(/^6/.test(n)) return {label:'DISC', gradient:'linear-gradient(135deg,#d97706,#f59e0b)'};
+  return {label:'——', gradient:'linear-gradient(135deg,#1c3860,#0c2a50)'};
+}
+
+function updateCardPreview(){
+  var name   = (qs('ac-name')||{}).value||'';
+  var number = (qs('ac-number')||{}).value||'';
+  var expiry = (qs('ac-expiry')||{}).value||'';
+
+  // Number display — mask middle digits
+  var raw = number.replace(/\s/g,'');
+  var masked = raw.length > 0
+    ? (raw.slice(0,4)+' '+(raw.slice(4,8)?raw.slice(4,8).replace(/\d/g,'•'):'')+' '+(raw.slice(8,12)?raw.slice(8,12).replace(/\d/g,'•'):'')+' '+raw.slice(12,16)).trim()
+    : '•••• •••• •••• ••••';
+  // Pad to full card format
+  while(masked.replace(/\s/g,'•').length < 19) masked += '•';
+
+  var nd = qs('ac-card-number-display');
+  if(nd) nd.textContent = number || '•••• •••• •••• ••••';
+
+  var nm = qs('ac-name-display');
+  if(nm) nm.textContent = name.toUpperCase() || 'FULL NAME';
+
+  var ex = qs('ac-exp-display');
+  if(ex) ex.textContent = expiry || 'MM/YY';
+
+  // Network detection
+  var net = detectNetwork(number);
+  var nl  = qs('ac-network-logo');
+  if(nl) nl.textContent = net.label;
+
+  var pr = qs('ac-preview');
+  if(pr) pr.style.background = net.gradient.replace(')',',#0c2a50)').replace('135deg,','135deg,').replace('linear-gradient','linear-gradient');
+}
+
+function saveNewCard(){
+  var name   = (qs('ac-name')||{}).value.trim();
+  var number = (qs('ac-number')||{}).value.trim();
+  var expiry = (qs('ac-expiry')||{}).value.trim();
+  var cvv    = (qs('ac-cvv')||{}).value.trim();
+  var zip    = (qs('ac-zip')||{}).value.trim();
+  var makeDef= qs('ac-default') && qs('ac-default').checked;
+
+  // Validate
+  if(!name){   toast('Enter the cardholder name', false); return; }
+  if(number.replace(/\s/g,'').length < 13){ toast('Enter a valid card number', false); return; }
+  if(!/^\d{2}\/\d{2}$/.test(expiry)){ toast('Enter expiry as MM/YY', false); return; }
+  if(cvv.length < 3){ toast('Enter a valid CVV', false); return; }
+  if(zip.length < 5){ toast('Enter a valid zip code', false); return; }
+
+  // Check expiry is not in the past
+  var parts = expiry.split('/');
+  var expDate = new Date(2000+parseInt(parts[1]), parseInt(parts[0])-1, 1);
+  if(expDate < new Date()){ toast('This card has expired', false); return; }
+
+  var net    = detectNetwork(number);
+  var last4  = number.replace(/\s/g,'').slice(-4);
+  var newId  = 'pm-'+(savedCards.length+1);
+
+  var newCard = {id:newId, label:net.label, number:last4, expiry:expiry, gradient:net.gradient, isDefault:makeDef};
+
+  // If setting as default, unset others
+  if(makeDef) savedCards.forEach(function(c){ c.isDefault=false; });
+  savedCards.push(newCard);
+
+  // Re-render payment methods list
+  rebuildPayMethods();
+
+  closeAddCard();
+  toast((net.label==='——'?'Card':net.label)+' ending '+last4+' added successfully!');
+}
+
+function rebuildPayMethods(){
+  var container = qs('pay-methods');
+  if(!container) return;
+
+  var html = '';
+  savedCards.forEach(function(card){
+    var isDefault = card.isDefault;
+    var isSelected = selectedMethodId === card.id;
+    html += '<div id="'+card.id+'" onclick="selectMethod(\''+card.id+'\')" style="display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:8px;border:1.5px solid '+(isSelected?'var(--gold)':'var(--bdr2)')+';background:'+(isSelected?'rgba(212,175,55,.1)':'transparent')+';cursor:pointer;margin-bottom:7px;transition:all .12s">'
+      +'<div style="width:34px;height:22px;background:'+card.gradient+';border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff">'+card.label+'</div>'
+      +'<div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--txt)">'+card.label+' ending '+card.number+'</div>'
+      +'<div style="font-size:10px;color:var(--txt3)">Expires '+card.expiry+'</div></div>'
+      +(isDefault?'<div style="font-size:10px;font-weight:700;color:var(--gold3);font-family:var(--mono)">DEFAULT</div>':'')
+      +'<button onclick="event.stopPropagation();removeCard(\''+card.id+'\')" style="background:none;border:none;cursor:pointer;color:var(--txt3);font-size:13px;padding:2px 5px;border-radius:4px;transition:color .12s" title="Remove card" onmouseover="this.style.color=\'#ef4444\'" onmouseout="this.style.color=\'var(--txt3)\'">✕</button>'
+      +'</div>';
+  });
+
+  html += '<button onclick="openAddCard()" style="display:flex;align-items:center;gap:7px;padding:9px 12px;border-radius:8px;border:1px dashed var(--bdr-g);background:none;color:var(--gold);cursor:pointer;font-size:12px;font-family:var(--font);width:100%;font-weight:600;transition:all .15s" onmouseover="this.style.background=\'rgba(212,175,55,.06)\'" onmouseout="this.style.background=\'none\'">+ Add new card</button>';
+
+  container.innerHTML = html;
+}
+
+function removeCard(id){
+  if(savedCards.length <= 1){ toast('You must keep at least one payment method', false); return; }
+  var card = savedCards.find(function(c){ return c.id===id; });
+  if(!card) return;
+  savedCards = savedCards.filter(function(c){ return c.id!==id; });
+  // If removed card was default or selected, set first card as both
+  if(card.isDefault || selectedMethodId===id){
+    savedCards[0].isDefault = true;
+    selectedMethodId = savedCards[0].id;
+    selectedPayMethod = savedCards[0].label+' ••••'+savedCards[0].number;
+  }
+  rebuildPayMethods();
+  toast((card.label==='——'?'Card':card.label)+' ending '+card.number+' removed.');
+}
+
+// ─── CITATION HELPERS ────────────────────────────────────────────────────────
+// ─── ISSUE CITATION LOGIC ─────────────────────────────────────────────────────
+var issuedToday = [];
+var issuedCount = 0;
+
+// Fine amounts per type
+var FINE_AMOUNTS = {
+  'No Permit':75, 'Expired Meter':50, 'Overtime':30,
+  'Blocking':100, 'Handicap':250, 'Double Park':65
+};
+
+// Known permits database (simulated)
+var KNOWN_PERMITS = {
+  'RVT-4829': {name:'Jane Doe', zone:'Z2', type:'Residential', status:'Expired', expiry:'Dec 31, 2025'},
+  'BXK-1192': {name:'Mark Chen', zone:'Z2', type:'Visitor', status:'Active', expiry:'Oct 30, 2025'},
+  'MPL-7734': {name:'Sarah Kim', zone:'Z1', type:'Residential', status:'Active', expiry:'Mar 31, 2026'},
+  'GHR-2280': {name:'David Moore', zone:'Z4', type:'Commercial', status:'Active', expiry:'Dec 31, 2025'},
+  'TAX-5591': {name:'Lisa Park', zone:'Z3', type:'Residential', status:'Active', expiry:'Jun 30, 2026'}
+};
+
+function lookupPlate(){
+  var plate = (qs('ci-plate')||{}).value.trim().toUpperCase();
+  var result = qs('ci-plate-result');
+  if(!plate || !result) return;
+  result.style.display = 'block';
+  // Simulate lookup
+  var rec = KNOWN_PERMITS[plate];
+  if(rec){
+    var isActive = rec.status === 'Active';
+    result.style.background  = isActive ? 'rgba(16,185,129,.08)' : 'rgba(239,68,68,.08)';
+    result.style.border      = '1px solid '+(isActive ? 'rgba(16,185,129,.25)' : 'rgba(239,68,68,.25)');
+    result.style.borderRadius = '10px';
+    result.style.padding = '13px 15px';
+    result.innerHTML =
+      '<div style="display:flex;align-items:center;gap:10px">'
+      +'<span style="font-size:20px">'+(isActive?'✅':'⚠️')+'</span>'
+      +'<div style="flex:1">'
+      +'<div style="font-size:13px;font-weight:700;color:var(--txt)">'+plate+' — '+rec.name+'</div>'
+      +'<div style="font-size:11px;color:var(--txt2);font-family:var(--mono);margin-top:2px">'
+      +'Permit: '+rec.type+' · Zone '+rec.zone+' · '
+      +'<span style="color:'+(isActive?'#10b981':'#ef4444')+';font-weight:700">'+rec.status.toUpperCase()+'</span>'
+      +' (expires '+rec.expiry+')'
+      +'</div></div>'
+      +'<span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;font-family:var(--mono);background:'+(isActive?'rgba(16,185,129,.15)':'rgba(239,68,68,.15)')+';color:'+(isActive?'#10b981':'#ef4444')+'">'+(isActive?'VALID PERMIT':'NO VALID PERMIT')+'</span>'
+      +'</div>';
+  } else {
+    result.style.background  = 'rgba(239,68,68,.08)';
+    result.style.border      = '1px solid rgba(239,68,68,.25)';
+    result.style.borderRadius = '10px';
+    result.style.padding = '13px 15px';
+    result.innerHTML =
+      '<div style="display:flex;align-items:center;gap:10px">'
+      +'<span style="font-size:20px">🚫</span>'
+      +'<div><div style="font-size:13px;font-weight:700;color:var(--txt)">'+plate+' — No record found</div>'
+      +'<div style="font-size:11px;color:var(--txt2);font-family:var(--mono);margin-top:2px">No active permit registered for this plate in any zone</div></div>'
+      +'<span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;font-family:var(--mono);background:rgba(239,68,68,.15);color:#ef4444">NO PERMIT</span>'
+      +'</div>';
+  }
+  updateCitPreview();
+}
+
+function updateFineAmt(){
+  var sel = qs('ci-type');
+  if(!sel) return;
+  var opt = sel.options[sel.selectedIndex];
+  updateCitPreview();
+}
+
+// Live preview updater — attach to all inputs
+function initCitForm(){
+  ['ci-plate','ci-type','ci-zone','ci-spot','ci-officer','ci-datetime','ci-notes','ci-color','ci-make'].forEach(function(id){
+    var el = qs(id);
+    if(el) el.addEventListener('input', updateCitPreview);
+    if(el && el.tagName==='SELECT') el.addEventListener('change', updateCitPreview);
+  });
+  // Set default datetime to now
+  var dt = qs('ci-datetime');
+  if(dt){
+    var now = new Date();
+    now.setSeconds(0,0);
+    dt.value = now.toISOString().slice(0,16);
+  }
+}
+
+function updateCitPreview(){
+  var plate   = (qs('ci-plate')||{}).value||'—';
+  var typeEl  = qs('ci-type');
+  var type    = typeEl ? (typeEl.options[typeEl.selectedIndex]||{}).value||'—' : '—';
+  var zoneEl  = qs('ci-zone');
+  var zone    = zoneEl ? (zoneEl.options[zoneEl.selectedIndex]||{}).value||'—' : '—';
+  var spot    = (qs('ci-spot')||{}).value||'—';
+  var officerEl = qs('ci-officer');
+  var officer = officerEl ? (officerEl.options[officerEl.selectedIndex]||{}).value||'—' : '—';
+  var dt      = (qs('ci-datetime')||{}).value||'—';
+  var notes   = (qs('ci-notes')||{}).value||'Notes will appear here…';
+  var amt     = type!=='—' ? (FINE_AMOUNTS[type]||0) : 0;
+
+  function set(id,val){ var e=qs(id); if(e) e.textContent=val; }
+  set('prev-plate',   plate.toUpperCase());
+  set('prev-type',    type);
+  set('prev-zone',    zone.split(' ')[0]||'—');
+  set('prev-spot',    spot);
+  set('prev-officer', officer.split(' ')[0]||'—');
+  set('prev-dt',      dt ? dt.replace('T',' ') : '—');
+  set('prev-amt',     amt ? '$'+amt+'.00' : '$—');
+  set('prev-notes',   notes||'Notes will appear here…');
+}
+
+function submitCitation(){
+  // Validation
+  var plate  = (qs('ci-plate')||{}).value.trim().toUpperCase();
+  var typeEl = qs('ci-type');
+  var type   = typeEl ? typeEl.value : '';
+  var zoneEl = qs('ci-zone');
+  var zone   = zoneEl ? zoneEl.value : '';
+  var spot   = (qs('ci-spot')||{}).value.trim();
+  var officer= qs('ci-officer') ? qs('ci-officer').value : '';
+  var dt     = (qs('ci-datetime')||{}).value;
+  var notes  = (qs('ci-notes')||{}).value.trim();
+
+  if(!plate){ toast('Enter a license plate number', false); return; }
+  if(!type){  toast('Select a citation type', false); return; }
+  if(!zone){  toast('Select a zone', false); return; }
+  if(!spot){  toast('Enter spot or meter number', false); return; }
+  if(!dt){    toast('Set date and time of violation', false); return; }
+
+  var amt = FINE_AMOUNTS[type] || 0;
+  var ref = 'CIT-'+new Date().getFullYear()+'-'+String(Math.floor(10000+Math.random()*89999));
+  var dtFmt = new Date(dt).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  var dueDate = new Date(dt);
+  dueDate.setDate(dueDate.getDate()+30);
+  var dueFmt = dueDate.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+
+  var newCit = {
+    ref:ref, plate:plate, type:type, zone:zone.split(' ')[0],
+    zoneFull:zone, spot:spot, officer:officer.split(' ')[0],
+    dt:dtFmt, due:dueFmt, amt:amt, notes:notes||'No additional notes.',
+    status:'Unpaid'
+  };
+
+  issuedToday.push(newCit);
+  issuedCount++;
+
+  // ── Add to ops citation records table ────────────────────────────────────
+  var tbody = qs('ops-cit-tbody');
+  if(tbody){
+    var tr = document.createElement('tr');
+    tr.dataset.type   = type;
+    tr.dataset.zone   = newCit.zone;
+    tr.dataset.status = 'Unpaid';
+    tr.innerHTML =
+      '<td><span style="font-family:var(--mono);font-size:11px;color:var(--gold3)">'+ref+'</span></td>'
+      +'<td><span style="font-weight:700;color:var(--txt)">'+newCit.officer+'</span></td>'
+      +'<td><span class="tag" style="background:rgba(212,175,55,.1);color:var(--gold3)">'+newCit.zone+'</span></td>'
+      +'<td style="color:var(--txt)">'+type+'</td>'
+      +'<td><span style="font-family:var(--mono);font-size:11px;color:var(--txt2)">'+plate+'</span></td>'
+      +'<td style="font-size:11px;font-family:var(--mono)">'+dtFmt+'</td>'
+      +'<td><span style="font-weight:700;color:#ef4444">$'+amt+'.00</span></td>'
+      +'<td><span class="tag" style="background:rgba(239,68,68,.12);color:#ef4444">Unpaid</span></td>'
+      +'<td><span class="tag" style="background:rgba(16,185,129,.1);color:#10b981">Valid</span></td>'
+      +'<td><button onclick="toast(\'Viewing '+ref+'…\')" style="font-size:10px;background:none;border:1px solid var(--bdr2);color:var(--txt3);padding:3px 8px;border-radius:5px;cursor:pointer;font-family:var(--mono)">View</button></td>';
+    tbody.insertBefore(tr, tbody.firstChild);
+  }
+
+  // ── If plate is RVT-4829 add to citizen citations ─────────────────────────
+  if(plate === 'RVT-4829'){
+    var citCards = qs('cit-cards');
+    if(citCards){
+      var card = document.createElement('div');
+      card.className = 'cit-card';
+      card.dataset.status = 'unpaid';
+      card.style.cssText = 'background:var(--bg2);border:1px solid var(--bdr-g);border-radius:14px;overflow:hidden;margin-bottom:14px;animation:fadeUp .3s ease';
+      card.innerHTML =
+        '<div style="display:flex;align-items:center;gap:13px;padding:16px 18px;border-bottom:1px solid var(--bdr)">'
+        +'<div style="width:44px;height:44px;border-radius:11px;background:rgba(239,68,68,.1);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🚔</div>'
+        +'<div style="flex:1">'
+        +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">'
+        +'<span style="font-size:15px;font-weight:800;color:var(--txt)">'+type+'</span>'
+        +'<span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;font-family:var(--mono);background:rgba(239,68,68,.15);color:#ef4444">UNPAID — NEW</span>'
+        +'</div>'
+        +'<div style="font-size:11px;color:var(--txt3);font-family:var(--mono)">'+ref+' &nbsp;·&nbsp; Issued '+dtFmt+'</div>'
+        +'</div>'
+        +'<div style="text-align:right;flex-shrink:0">'
+        +'<div style="font-size:24px;font-weight:800;color:#ef4444">$'+amt+'.00</div>'
+        +'<div style="font-size:10px;font-family:var(--mono);color:var(--txt3);margin-top:2px">Due '+dueFmt+'</div>'
+        +'</div></div>'
+        +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--bdr);border-bottom:1px solid var(--bdr)">'
+        +[['Zone',newCit.zone],['Location',spot],['Officer',officer.split(' ')[0]],['Plate',plate]].map(function(x){
+          return '<div style="background:var(--bg3);padding:10px 14px"><div style="font-size:9px;font-family:var(--mono);color:var(--txt3);margin-bottom:3px;text-transform:uppercase;letter-spacing:.06em">'+x[0]+'</div><div style="font-size:12px;font-weight:600;color:var(--txt)">'+x[1]+'</div></div>';
+        }).join('')+'</div>'
+        +'<div style="padding:13px 18px;background:rgba(245,158,11,.04);border-bottom:1px solid var(--bdr)">'
+        +'<div style="font-size:10px;font-family:var(--mono);color:var(--gold);margin-bottom:5px;letter-spacing:.08em;text-transform:uppercase;opacity:.8">Officer Notes</div>'
+        +'<div style="font-size:13px;color:var(--txt2);line-height:1.6">'+(notes||'No additional notes.')+'</div>'
+        +'</div>'
+        +'<div style="padding:13px 18px;display:flex;align-items:center;gap:9px">'
+        +'<button class="btn btn-success btn-sm" onclick="openPayConfirm([\''+ref+'\'],'+amt+')">Pay $'+amt+'.00 Now</button>'
+        +'<button class="btn btn-ghost btn-sm" onclick="contestCitation(\''+ref+'\')">Contest Citation</button>'
+        +'<span style="font-size:11px;color:var(--txt3);margin-left:4px">+$25 late fee after '+dueFmt+'</span>'
+        +'</div>';
+      citCards.insertBefore(card, citCards.firstChild);
+    }
+  }
+
+  // ── Update "issued today" list ────────────────────────────────────────────
+  var todayList = qs('issued-today-list');
+  var countLbl  = qs('issued-count-lbl');
+  if(todayList){
+    var item = document.createElement('div');
+    item.className = 'act-item';
+    item.innerHTML =
+      '<div class="act-icon" style="background:rgba(239,68,68,.1)">🚔</div>'
+      +'<div style="flex:1"><div class="act-title">'+type+' — '+newCit.zone+'</div>'
+      +'<div class="act-sub">'+ref+' &nbsp;·&nbsp; '+plate+' &nbsp;·&nbsp; '+dtFmt+'</div></div>'
+      +'<div class="act-amt"><div class="act-val" style="color:#ef4444">$'+amt+'.00</div></div>';
+    if(todayList.querySelector('div[style*="center"]')){
+      todayList.innerHTML = '';
+    }
+    todayList.insertBefore(item, todayList.firstChild);
+    if(countLbl) countLbl.textContent = issuedCount + ' citation'+(issuedCount>1?'s':'');
+  }
+
+  // ── Reset form ────────────────────────────────────────────────────────────
+  ['ci-plate','ci-spot','ci-notes','ci-color','ci-make'].forEach(function(id){
+    var e=qs(id); if(e) e.value='';
+  });
+  var typeEl2=qs('ci-type'); if(typeEl2) typeEl2.selectedIndex=0;
+  var zoneEl2=qs('ci-zone'); if(zoneEl2) zoneEl2.selectedIndex=0;
+  var plRes=qs('ci-plate-result'); if(plRes) plRes.style.display='none';
+  var dtEl=qs('ci-datetime');
+  if(dtEl){ var n2=new Date(); n2.setSeconds(0,0); dtEl.value=n2.toISOString().slice(0,16); }
+  updateCitPreview();
+
+  toast('Citation '+ref+' issued for '+plate+' — $'+amt+'.00 fine logged.');
+}
+
+function filterCitations(status, btn){
+  var a = acc();
+  document.querySelectorAll('.cit-f').forEach(function(b){
+    b.style.borderColor='var(--bdr2)'; b.style.background='none'; b.style.color='var(--txt2)';
+  });
+  btn.style.borderColor=a; btn.style.background=a+'18'; btn.style.color='var(--gold3)';
+  document.querySelectorAll('#cit-cards .cit-card').forEach(function(el){
+    el.style.display = (status==='all' || el.dataset.status===status) ? '' : 'none';
+  });
+}
+
+function contestCitation(ref){
+  toast('Appeal submitted for '+ref+'. You will hear within 5 business days.');
+  // Update the citation status visually
+  var cards = document.querySelectorAll('.cit-card');
+  cards.forEach(function(card){
+    if(card.innerHTML.indexOf(ref)>-1){
+      var badges = card.querySelectorAll('span');
+      badges.forEach(function(b){
+        if(b.textContent==='UNPAID'){
+          b.textContent='APPEALED';
+          b.style.background='rgba(245,158,11,.15)';
+          b.style.color='#f59e0b';
+        }
+      });
+    }
+  });
+}
+
+function filterOfficerCits(){
+  var search = (qs('cit-search')||{}).value||'';
+  var zone   = (qs('cit-zone-filter')||{}).value||'';
+  var type   = (qs('cit-type-filter')||{}).value||'';
+  var status = (qs('cit-status-filter')||{}).value||'';
+  var rows   = document.querySelectorAll('#ops-cit-tbody tr');
+  var shown  = 0;
+  rows.forEach(function(row){
+    var txt = row.textContent.toLowerCase();
+    var rz  = row.dataset.zone||'';
+    var rt  = row.dataset.type||'';
+    var rs  = row.dataset.status||'';
+    var match = (!search || txt.indexOf(search.toLowerCase())>-1)
+             && (!zone   || rz===zone)
+             && (!type   || rt===type)
+             && (!status || rs===status);
+    row.style.display = match ? '' : 'none';
+    if(match) shown++;
+  });
+}
+
+function refreshCitizenCitationStatus(){
+  // After payment, update citation cards to show PAID status
+  var cards = document.querySelectorAll('#cit-cards .cit-card');
+  cards.forEach(function(card){
+    ['CIT-2025-88442','CIT-2025-91003','CIT-2025-94521'].forEach(function(ref){
+      if(paidFines[ref] && card.innerHTML.indexOf(ref)>-1){
+        // Update status badge
+        var html = card.innerHTML;
+        html = html.replace(
+          'background:rgba(239,68,68,.15);color:#ef4444">UNPAID</span>',
+          'background:rgba(16,185,129,.15);color:#10b981">PAID</span>'
+        );
+        html = html.replace('data-status="unpaid"','data-status="paid"');
+        // Swap action buttons
+        html = html.replace(
+          'onclick="openPayConfirm([\''+ref+'\'],',
+          'style="display:none" onclick="openPayConfirm([\''+ref+'\'],'
+        );
+        card.innerHTML = html;
+        card.dataset.status = 'paid';
+      }
+    });
+  });
+}
+
+function filterReceipts(type, btn){
+  document.querySelectorAll('.rec-filter').forEach(function(b){
+    b.style.borderColor='var(--bdr2)'; b.style.background='none'; b.style.color='var(--txt2)';
+  });
+  var a=acc();
+  btn.style.borderColor=a; btn.style.background=a+'18'; btn.style.color=a;
+  var items = document.querySelectorAll('#receipts-container .receipt');
+  items.forEach(function(el){
+    el.style.display = (type==='all' || el.dataset.type===type) ? '' : 'none';
+  });
+}
+
+// Spin animation for payment processing
+var spinStyle = document.createElement('style');
+spinStyle.textContent = '@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}';
+document.head.appendChild(spinStyle);
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+buildSidebar();
+buildPages();
+
+// Set default dates for the apply form whenever it's rendered
+function initApplyDates(){
+  var startEl = qs('ap-start'), endEl = qs('ap-end');
+  if(!startEl || !endEl) return;
+  var today = new Date();
+  var tomorrow = new Date(today); tomorrow.setDate(today.getDate()+1);
+  var yearLater = new Date(today); yearLater.setFullYear(today.getFullYear()+1);
+  startEl.value = tomorrow.toISOString().split('T')[0];
+  endEl.value   = yearLater.toISOString().split('T')[0];
+  updateDurationInfo();
+  startEl.addEventListener('change', updateDurationInfo);
+  endEl.addEventListener('change', updateDurationInfo);
+}
+function updateDurationInfo(){
+  var startEl=qs('ap-start'), endEl=qs('ap-end'), txt=qs('ap-duration-txt');
+  if(!startEl||!endEl||!txt) return;
+  var s=new Date(startEl.value), e=new Date(endEl.value);
+  if(!startEl.value||!endEl.value){txt.textContent='Select start and end dates to see permit duration';return;}
+  if(e<=s){txt.textContent='End date must be after start date';txt.style.color='#ef4444';return;}
+  txt.style.color='';
+  var days=Math.round((e-s)/(1000*60*60*24));
+  var months=(days/30.44).toFixed(1);
+  var fromStr=s.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  var toStr=e.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  txt.textContent='Permit valid '+fromStr+' → '+toStr+' ('+days+' days / ~'+months+' months)';
+}
+// Auto-init when citizen navigates to apply page — hook into nav
+var _origNav = nav;
+nav = function(pid){
+  _origNav(pid);
+  if(pid==='c-apply') setTimeout(initApplyDates, 50);
+};
+</script>
+</body>
+</html>
